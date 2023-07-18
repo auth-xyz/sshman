@@ -1,0 +1,10 @@
+#
+# This is an example file for SSH Manager, this should fill automatically
+#
+
+[main-:name:] # :name: is the session-name the user inputs when generating a new session.
+key=
+host=
+address=
+command=
+arguments=
