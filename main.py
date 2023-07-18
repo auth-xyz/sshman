@@ -23,37 +23,35 @@ def generate_session():
     # Convert the dictionary to a TOML string before encoding
     session_data_str = toml.dumps({"main-" + session_name: session_data})
 
-    # Step 1: Encrypt the session data
-    encrypted_data = hashlib.md5(session_data_str.encode()).digest()
+    # Step 1: Encode the session data as base64
+    encoded_data = base64.b64encode(session_data_str.encode()).decode()
 
-    # Step 2: Encode the encrypted data as base64
-    encoded_data = base64.b64encode(encrypted_data).decode()
-
-    # Step 3: Save the encoded data to the config file
+    # Step 2: Save the encoded data to the config file
     config_manager = ConfigManager()
     config_manager.create_config_directory()
-    config_manager.save_session_info(session_name, {"data": encoded_data})
+    config_manager.save_session_info(session_name, session_data_str)
 
     print("sshman : Success!")
 
 def connect_session(session_name):
-    # Step 1: Load the encoded session data from the config file
+    # Step 1: Load the session data from the config file
     config_manager = ConfigManager()
-    encoded_data = config_manager.load_session_info(session_name)
-    if not encoded_data:
+    session_data_str = config_manager.load_session_info(session_name)
+    if not session_data_str:
         print(f"sshman : Session '{session_name}' not found.")
         return
 
-    # Step 2: Decode the encoded data from base64
-    decoded_data = base64.b64decode(encoded_data.encode())
+    # Step 2: Convert the session data back to a dictionary
+    session_data = toml.loads(session_data_str)
 
-    # Step 3: Convert the decoded data back to bytes
-    data_bytes = hashlib.md5(decoded_data).digest()
+    # Step 3: Convert the decoded data back to a dictionary
+    # session_data = toml.loads(decoded_data)
 
     # Step 4: Build and run the SSH command
     session_manager = SessionManager()
-    ssh_command = session_manager.connect_ssh(toml.loads(data_bytes))
+    ssh_command = session_manager.connect_ssh(session_data, session_name)
     print("sshman : Running SSH command:", ssh_command)
+
 
 def main():
     parser = argparse.ArgumentParser(description="SSH Session Manager")

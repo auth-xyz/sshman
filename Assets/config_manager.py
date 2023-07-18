@@ -12,8 +12,8 @@ class ConfigManager:
     def save_session_info(self, session_name, data):
         session_file = os.path.join(self.config_dir, f"{session_name}.toml")
         with open(session_file, "w") as file:
-            # Save the data as a dictionary containing the "data" key and the encoded_data as the value
-            toml.dump({"data": data}, file)
+            # Save the data directly as a string
+            file.write(data)
 
     def load_session_info(self, session_name):
         session_file = os.path.join(self.config_dir, f"{session_name}.toml")
@@ -21,9 +21,8 @@ class ConfigManager:
             return None
 
         with open(session_file, "r") as file:
-            session_data = toml.load(file)
+            # Read the session data as a string
+            session_data = file.read()
 
-        # Extract the encoded data from the dictionary and return it as a string
-        encoded_data = session_data.get("data", None)
-        return encoded_data
+        return session_data
     
