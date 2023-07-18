@@ -1,6 +1,6 @@
 import os
 import toml
-from endecr import Decrypt, Encrypt
+from cryptography_manager import Decrypt, Encrypt
 
 with open(os.path.expanduser(".sshm/pepper.reppep"), "rb") as key_file:
     key_file.read()

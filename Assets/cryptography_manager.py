@@ -1,4 +1,3 @@
-import cryptography
 from cryptography.fernet import Fernet
 
 class Encrypt():
