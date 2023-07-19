@@ -21,7 +21,8 @@ class SessionManager:
                 key = paramiko.RSAKey.from_private_key_file(key_path)
                 client.connect(hostname=host, username=username, pkey=key)
             else:
-                client.connect(hostname=host, username=username)
+                password = input("[ sshman : Input your password ] ")
+                client.connect(hostname=host, username=username, password=password)
 
             channel = client.get_transport().open_session()
             channel.get_pty()  # Request a pseudo-terminal (PTY) for terminal support
