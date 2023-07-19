@@ -2,8 +2,6 @@
 
 import toml
 import argparse
-import base64
-import hashlib
 
 from Assets.config_manager import ConfigManager
 from Assets.session_manager import SessionManager
@@ -24,10 +22,6 @@ def generate_session():
 
     # Convert the dictionary to a TOML string before encoding
     session_data_str = toml.dumps({"main-" + session_name: session_data})
-
-    # Step 1: Encode the session data as base64
-    #encoded_data = base64.b64encode(session_data_str.encode()).decode()
-
     # Step 2: Save the encoded data to the config file
     config_manager = ConfigManager()
     config_manager.create_config_directory()
@@ -45,16 +39,10 @@ def connect_session(session_name):
 
     # Step 2: Convert the session data back to a dictionary
     session_data = toml.loads(session_data_str)
-
-    # Step 3: Convert the decoded data back to a dictionary
-    # session_data = toml.loads(decoded_data)
-
     # Step 4: Build and run the SSH command
     session_manager = SessionManager()
     ssh_command = session_manager.connect_ssh(session_data, session_name)
     
-
-
 def main():
     parser = argparse.ArgumentParser(description="SSH Session Manager")
     parser.add_argument("--generate-session", action="store_true", help="Generate a new SSH session")
@@ -64,8 +52,6 @@ def main():
 
     if args.generate_session:
         print("[ sshman : Generating session ]")
-        # Implement a fancy loading bar here to create the .sshm dir alongside a config file
-
         generate_session()
 
     elif args.connect:
