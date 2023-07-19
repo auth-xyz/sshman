@@ -10,7 +10,7 @@ class SessionManager:
     def connect_ssh(session_info, session_name):
         username = session_info[f"main-{session_name}"]["username"]
         host = session_info[f"main-{session_name}"]["host"]
-        key_path = session_info[f"main-{session_name}"]["key"]
+        key_path = session_info[f"main-{session_name}"].get("key", None)  # Use get() with a default value
 
         client = paramiko.SSHClient()
         client.load_system_host_keys()
