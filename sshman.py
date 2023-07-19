@@ -1,3 +1,5 @@
+#! /usr/bin/python3
+
 import toml
 import argparse
 import base64
@@ -24,7 +26,7 @@ def generate_session():
     session_data_str = toml.dumps({"main-" + session_name: session_data})
 
     # Step 1: Encode the session data as base64
-    encoded_data = base64.b64encode(session_data_str.encode()).decode()
+    #encoded_data = base64.b64encode(session_data_str.encode()).decode()
 
     # Step 2: Save the encoded data to the config file
     config_manager = ConfigManager()
@@ -50,7 +52,7 @@ def connect_session(session_name):
     # Step 4: Build and run the SSH command
     session_manager = SessionManager()
     ssh_command = session_manager.connect_ssh(session_data, session_name)
-    print("sshman : Running SSH command:", ssh_command)
+    
 
 
 def main():
