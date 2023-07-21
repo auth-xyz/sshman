@@ -43,10 +43,25 @@ def connect_session(session_name):
     session_manager = SessionManager()
     ssh_command = session_manager.connect_ssh(session_data, session_name)
     
+def list_sessions():
+    # Step 1: Load the names of all available sessions from the config file
+    config_manager = ConfigManager()
+    session_names = config_manager.load_all_session_names()
+
+    if not session_names:
+        print("[ sshman : No sessions found. ]")
+        return
+
+    # Step 2: Print the names of all available sessions
+    print("[ sshman: Available sessions: ]")
+    for session_name in session_names:
+        print(f"- {session_name}")
 def main():
     parser = argparse.ArgumentParser(description="SSH Session Manager")
     parser.add_argument("--generate-session", action="store_true", help="Generate a new SSH session")
+    parser.add_argument("--sessions", help="Outputs all sessions", action="store_true")
     parser.add_argument("--connect", type=str, help="Connect to a saved SSH session by name")
+    parser.add_argument("--remove-session", type=str, help="Removes a session")
 
     args = parser.parse_args()
 
@@ -57,6 +72,15 @@ def main():
     elif args.connect:
         print(f"[ sshman : Connecting to session '{args.connect}' ]")
         connect_session(args.connect)
+    elif args.sessions:
+        list_sessions()
+    elif args.remove_session:
+        print(f"[ sshman : Removing session '{args.remove_session}' ]")
+        config_manager = ConfigManager()
+        config_manager.remove_session(args.remove_session)
+    else:
+        print("[ sshman : No valid option selected. Use --help for usage details. ]")
+
 
 if __name__ == "__main__":
     main()
