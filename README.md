@@ -15,6 +15,7 @@ git clone https://github.com/auth-xyz/sshman
 cd sshman/
 
 chmod +x sshman.py # Lets you do ./sshman.py instead of having to run python3 sshman.py, etc.
+sudo ln -s /path/to/sshman/sshman.py /usr/bin/sshman # lets you use sshman in whatever directory you are
 
 ## Basic usage:
 # to create a session you can do:
