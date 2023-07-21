@@ -25,6 +25,12 @@ sshman --generate-session
 # to connect to a session, you can run:
 sshman --connect <session>
 
+# To list the sessions you have, you can use:
+sshman --sessions
+
+# To remove a session you generated you can use
+sshman --remove-session <session>
+
 # A note about --generate-session:
 # username : the username of the machine you're connecting to via ssh
 # host : the machine's public ipv4
