@@ -4,8 +4,18 @@ import sys
 import tty
 import termios
 import select
+import base64
+import toml
 
 class SessionManager:
+    @staticmethod
+    def _encode_base64(data):
+        return base64.b64encode(data.encode()).decode()
+
+    @staticmethod
+    def _decode_base64(encoded_data):
+        return base64.b64decode(encoded_data).decode()
+
     @staticmethod
     def connect_ssh(session_info, session_name):
         username = session_info[f"main-{session_name}"]["username"]
@@ -17,11 +27,30 @@ class SessionManager:
         client.set_missing_host_key_policy(paramiko.WarningPolicy())
 
         try:
+            password = None
+            saved_password = session_info[f"main-{session_name}"].get("password", None)
+
             if key_path:
                 key = paramiko.RSAKey.from_private_key_file(key_path)
                 client.connect(hostname=host, username=username, pkey=key)
+            elif saved_password:
+                password = SessionManager._decode_base64(saved_password)
+                client.connect(hostname=host, username=username, password=password)
             else:
                 password = input("[ sshman : Input your password ] ")
+                save_password = input("[ sshman : Save password for future sessions? (y/n) ] ").lower()
+
+                if save_password == "y":
+                    # Encode the password in Base64 before saving it to the .toml file
+                    encoded_password = SessionManager._encode_base64(password)
+                    session_info[f"main-{session_name}"]["password"] = encoded_password
+                    config_dir = os.path.expanduser(os.path.join("~", ".sshm"))
+                    session_file = os.path.join(config_dir, f"{session_name}.toml")
+
+                    # Save the updated session_info to the .toml file with the corresponding session name
+                    with open (session_file, "w") as toml_file:
+                        toml.dump(session_info, toml_file)
+
                 client.connect(hostname=host, username=username, password=password)
 
             channel = client.get_transport().open_session()
