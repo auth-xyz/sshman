@@ -1,40 +1,43 @@
-# sshman - A easy to use SSH Manager.
+# SSH Session Manager
 
-##### sshman, is a side project of mine that I decided to work on after thinking about it for a while, its a simple program that can be setted up with 2 lines.
+### A simple Python-based SSH session manager to facilitate easy connection to SSH hosts. This project allows you to generate, connect, list, and remove SSH sessions by saving them as TOML files.
 
-##### For now, i've only tested sshman on Arch, it still needs some work to be put into it, for its still not finished. But I'll do what I can to get it working.
 
-## Installation:
-
-#### Requirements:
+#### Prerequisites:
 > [Python 3.10+](https://python.org/downloads/)
 
+#### Installation:
+
 ```bash
-# Clone the repository
 git clone https://github.com/auth-xyz/sshman
 cd sshman/
-
-chmod +x sshman.py # Lets you do ./sshman.py instead of having to run python3 sshman.py, etc.
-sudo ln -s /path/to/sshman/sshman.py /usr/bin/sshman # lets you use sshman in whatever directory you are
-
-## Basic usage:
-# to create a session you can do:
-sshman --generate-session
-# After answering a few questions, a folder in $HOME will be created .sshm
-# In there will be saved your sessions.
-
-# to connect to a session, you can run:
-sshman --connect <session>
-
-# To list the sessions you have, you can use:
-sshman --sessions
-
-# To remove a session you generated you can use
-sshman --remove-session <session>
-
-# A note about --generate-session:
-# username : the username of the machine you're connecting to via ssh
-# host : the machine's public ipv4
-# key-path (if you use a key like a .pem) : put the entire path, ex: /home/auth/.ssh/key.pem. If you don't have a key, you can leave this empty.
+pip install -r requirements.txt
 ```
+
+##### Otherwise, you can download the compiled [version](https://github.com/auth-xyz/sshman/releases/tag/Stable)
+
+#### Usage:
+
+* Generating Session:
+```bash
+python sshman.py --generate-session
+```
+
+* Removing Session
+```bash
+python sshman.py --remove-session <session-name>
+```
+
+* Connecting to a session
+```bash
+python sshman.py --connect <session-name>
+```
+
+* Listing all sessions
+```bash
+python sshman.py --sessions
+```
+
+
+###### sshman, is a side project of mine that I decided to work on after thinking about it for a while, its a simple program that can be set up with 2 lines.
 
