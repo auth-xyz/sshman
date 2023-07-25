@@ -6,6 +6,9 @@ import termios
 import select
 import base64
 import toml
+import getpass
+
+from paramiko.client import AutoAddPolicy, RejectPolicy
 
 class SessionManager:
     @staticmethod
@@ -24,7 +27,7 @@ class SessionManager:
 
         client = paramiko.SSHClient()
         client.load_system_host_keys()
-        client.set_missing_host_key_policy(paramiko.WarningPolicy())
+        client.set_missing_host_key_policy(AutoAddPolicy)
 
         try:
             password = None
@@ -32,12 +35,12 @@ class SessionManager:
 
             if key_path:
                 key = paramiko.RSAKey.from_private_key_file(key_path)
-                client.connect(hostname=host, username=username, pkey=key)
+                client.connect(hostname=host, username=username, pkey=key, port=2222)
             elif saved_password:
                 password = SessionManager._decode_base64(saved_password)
-                client.connect(hostname=host, username=username, password=password)
+                client.connect(hostname=host, username=username, password=password, port=2222)
             else:
-                password = input("[ sshman : Input your password ] ")
+                password = getpass.getpass("[ sshman : Input your password ] ")
                 save_password = input("[ sshman : Save password for future sessions? (y/n) ] ").lower()
 
                 if save_password == "y":
@@ -51,7 +54,7 @@ class SessionManager:
                     with open (session_file, "w") as toml_file:
                         toml.dump(session_info, toml_file)
 
-                client.connect(hostname=host, username=username, password=password)
+                client.connect(hostname=host, username=username, password=password, port=2222)
 
             channel = client.get_transport().open_session()
             channel.get_pty()  # Request a pseudo-terminal (PTY) for terminal support
