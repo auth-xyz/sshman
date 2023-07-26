@@ -12,6 +12,48 @@ from paramiko.client import AutoAddPolicy, RejectPolicy
 
 class SessionManager:
     @staticmethod
+    def enable_port_forwarding(session_info, session_name):
+        username = session_info[f"main-{session_name}"]["username"]
+        host = session_info[f"main-{session_name}"]["host"]
+        key_path = session_info[f"main-{session_name}"].get("key", None)
+
+        client = paramiko.SSHClient()
+        client.load_system_host_keys()
+        client.set_missing_host_key_policy(AutoAddPolicy)
+
+        try:
+            if key_path:
+                key = paramiko.RSAKey.from_private_key_file(key_path)
+                client.connect(hostname=host, username=username, pkey=key, port=22)
+            else:
+                password = getpass.getpass("[ sshman : Input your password ] ")
+                client.connect(hostname=host, username=username, password=password, port=22)
+
+            transport = client.get_transport()
+            if transport:
+                # Set up local port forwarding (localport -> remotehost:remoteport)
+                localport = int(input("Enter the local port to forward: "))
+                remotehost = input("Enter the remote host to forward to: ")
+                remoteport = int(input("Enter the remote port to forward to: "))
+                transport.request_port_forward("", localport, remotehost, remoteport)
+                print(f"[ sshman : Port forwarding enabled: localhost:{localport} -> {remotehost}:{remoteport} ]")
+
+                # You can now interact with the remote service using the local port
+                # For example, you can use localhost:localport to access the remote service
+                # Note: Remember to keep the script running to maintain the port forwarding.
+                while True:
+                    pass
+
+        except paramiko.AuthenticationException:
+            print("[ sshman : Authentication failed. ]")
+        except paramiko.SSHException as e:
+            print(f"[ sshman : SSH error: {e} ]")
+        except Exception as e:
+            print(f"[ sshman : Error: {e} ]")
+        finally:
+            client.close()
+
+    @staticmethod
     def _encode_base64(data):
         return base64.b64encode(data.encode()).decode()
 

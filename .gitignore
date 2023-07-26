@@ -1,3 +1,5 @@
 .sshm/
 Assets/__pycache__/
 Assets/__pycache__/*.py[cod]
+
+*.tar.gz
