@@ -47,8 +47,6 @@ def connect_session(session_name, port_forwarding=False):
     # Step 4: Build and run the SSH command
     session_manager = SessionManager()
     ssh_command = session_manager.connect_ssh(session_data, session_name)
-    if port_forwarding:
-        session_manager.enable_port_forwarding(session_data, session_name)
     
 def list_sessions():
     # Step 1: Load the names of all available sessions from the config file
@@ -126,7 +124,7 @@ def main():
         download_latest(username, repo, path="./")
     elif args.connect:
         print(f"[ sshman : Connecting to session '{args.connect}' ]")
-        connect_session(args.connect, args.port_fowarding)
+        connect_session(args.connect)
     elif args.sessions:
         list_sessions()
     elif args.remove_session:
