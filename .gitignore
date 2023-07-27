@@ -6,4 +6,5 @@ Assets/__pycache__/*.py[cod]
 *.spec
 dist/
 build/
-build.sh
+linux_build.sh
+win_build.sh
