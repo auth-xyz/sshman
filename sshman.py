@@ -112,7 +112,6 @@ def main():
     parser.add_argument("-C", "--connect", type=str, help="Connect to a saved SSH session by name")
     parser.add_argument("-R", "--remove-session", type=str, help="Removes a session")
     parser.add_argument("-u", "--update", help="Downloads the latest compiled version and installs it", action="store_true")
-    parser.add_argument("--test", help="Placeholder command", action="store_true")
 
     args = parser.parse_args()
 
