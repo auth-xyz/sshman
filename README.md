@@ -14,7 +14,7 @@ cd sshman/
 pip install -r requirements.txt
 ```
 
-##### Otherwise, you can download the compiled [version](https://github.com/auth-xyz/sshman/releases/tag/Stable)
+##### Otherwise, you can download the compiled [version](https://github.com/auth-xyz/sshman/releases/)
 
 #### Usage:
 
