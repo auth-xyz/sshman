@@ -5,11 +5,12 @@ import tarfile
 
 import toml
 import argparse
-import requests
+from requests import get
 from Assets.config_manager import ConfigManager
 from Assets.session_manager import SessionManager
 
-username, repo = "auth-xyz", "sshman"
+gh_username, repository = "auth-xyz", "sshman"
+
 
 def generate_session():
     # Get session details from user input
@@ -34,6 +35,7 @@ def generate_session():
 
     print("sshman : Success!")
 
+
 def connect_session(session_name, port_forwarding=False):
     # Step 1: Load the session data from the config file
     config_manager = ConfigManager()
@@ -47,7 +49,8 @@ def connect_session(session_name, port_forwarding=False):
     # Step 4: Build and run the SSH command
     session_manager = SessionManager()
     ssh_command = session_manager.connect_ssh(session_data, session_name)
-    
+
+
 def list_sessions():
     # Step 1: Load the names of all available sessions from the config file
     config_manager = ConfigManager()
@@ -62,9 +65,10 @@ def list_sessions():
     for session_name in session_names:
         print(f"- {session_name}")
 
+
 def download_latest(user: str, repo: str, path="./"):
     url = f"https://api.github.com/repos/{user}/{repo}/releases/latest"
-    response = requests.get(url)
+    response = get(url)
 
     if response.status_code == 200:
         release_data = response.json()
@@ -74,7 +78,7 @@ def download_latest(user: str, repo: str, path="./"):
         filename = os.path.join(path, asset["name"])
 
         # Download the asset file
-        with requests.get(download_url, stream=True) as download_response:
+        with get(download_url, stream=True) as download_response:
             download_response.raise_for_status()
             with open(filename, "wb") as f:
                 for chunk in download_response.iter_content(chunk_size=8192):
@@ -105,13 +109,15 @@ def download_latest(user: str, repo: str, path="./"):
     else:
         print(f"[ sshman: Failed to fetch release data. Status code: {response.status_code} ]")
 
+
 def main():
     parser = argparse.ArgumentParser(description="SSH Session Manager")
     parser.add_argument("-G", "--generate-session", action="store_true", help="Generate a new SSH session")
     parser.add_argument("-ls", "--sessions", help="Outputs all sessions", action="store_true")
     parser.add_argument("-C", "--connect", type=str, help="Connect to a saved SSH session by name")
     parser.add_argument("-R", "--remove-session", type=str, help="Removes a session")
-    parser.add_argument("-u", "--update", help="Downloads the latest compiled version and installs it", action="store_true")
+    parser.add_argument("-u", "--update", help="Downloads the latest compiled version and installs it",
+                        action="store_true")
 
     args = parser.parse_args()
 
@@ -120,7 +126,7 @@ def main():
         generate_session()
     elif args.update:
         print(f"[ sshman : Downloading latest version of sshman... ]")
-        download_latest(username, repo, path="./")
+        download_latest(gh_username, repository, path="./")
     elif args.connect:
         print(f"[ sshman : Connecting to session '{args.connect}' ]")
         connect_session(args.connect)
@@ -132,6 +138,7 @@ def main():
         config_manager.remove_session(args.remove_session)
     else:
         print("[ sshman : No valid option selected. Use --help for usage details. ]")
+
 
 if __name__ == "__main__":
     main()
