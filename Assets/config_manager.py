@@ -1,4 +1,5 @@
 import os
+
 class ConfigManager:
     def __init__(self, config_dir=".sshm"):
         self.config_dir = os.path.expanduser(os.path.join("~", config_dir))
@@ -39,6 +40,7 @@ class ConfigManager:
             session_data = file.read()
 
         return session_data
+
     def load_all_session_names(self):
         # Get a list of all files in the config directory
         files = os.listdir(self.config_dir)

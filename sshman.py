@@ -11,7 +11,6 @@ from Assets.session_manager import SessionManager
 
 gh_username, repository = "auth-xyz", "sshman"
 
-
 def generate_session():
     # Get session details from user input
     session_name = input("sshman : how do you want to name this session? ")
@@ -19,16 +18,13 @@ def generate_session():
     host = input("sshman : input the host: ")
     key_path = input("sshman : input the key path (leave blank for password authentication): ")
 
-    # Example session data
     session_data = {
         "username": username,
         "host": host,
         "key": key_path if key_path else None,
     }
 
-    # Convert the dictionary to a TOML string before encoding
     session_data_str = toml.dumps({"main-" + session_name: session_data})
-    # Step 2: Save the encoded data to the config file
     config_manager = ConfigManager()
     config_manager.create_config_directory()
     config_manager.save_session_info(session_name, session_data_str)
@@ -36,7 +32,7 @@ def generate_session():
     print("sshman : Success!")
 
 
-def connect_session(session_name, port_forwarding=False):
+def connect_session(session_name):
     # Step 1: Load the session data from the config file
     config_manager = ConfigManager()
     session_data_str = config_manager.load_session_info(session_name)
@@ -44,15 +40,14 @@ def connect_session(session_name, port_forwarding=False):
         print(f"sshman : Session '{session_name}' not found.")
         return
 
-    # Step 2: Convert the session data back to a dictionary
     session_data = toml.loads(session_data_str)
-    # Step 4: Build and run the SSH command
     session_manager = SessionManager()
     ssh_command = session_manager.connect_ssh(session_data, session_name)
 
+    return ssh_command
+
 
 def list_sessions():
-    # Step 1: Load the names of all available sessions from the config file
     config_manager = ConfigManager()
     session_names = config_manager.load_all_session_names()
 
@@ -60,7 +55,6 @@ def list_sessions():
         print("[ sshman : No sessions found. ]")
         return
 
-    # Step 2: Print the names of all available sessions
     print("[ sshman: Available sessions: ]")
     for session_name in session_names:
         print(f"- {session_name}")
@@ -77,7 +71,6 @@ def download_latest(user: str, repo: str, path="./"):
         download_url = asset["browser_download_url"]
         filename = os.path.join(path, asset["name"])
 
-        # Download the asset file
         with get(download_url, stream=True) as download_response:
             download_response.raise_for_status()
             with open(filename, "wb") as f:
@@ -85,12 +78,9 @@ def download_latest(user: str, repo: str, path="./"):
                     f.write(chunk)
 
         print(f"[ sshman: Successfully downloaded {asset['name']} to {path} ]")
-
-        # Extract the downloaded .tar.gz file
         with tarfile.open(filename, "r:gz") as tar:
             tar.extractall(path=path)
 
-        # Move sshman file to ~/.sshm/.bin/ and replace if it already exists
         extracted_folder = os.path.splitext(asset["name"])[0]
         extracted_sshman = os.path.join(path, "dist", "sshman")
         target_sshman = os.path.expanduser("~/.sshm/.bin/sshman")
@@ -123,7 +113,7 @@ def main():
     args = parser.parse_args()
 
     if args.generate_session:
-        print("[ sshman : Generating session ]")
+        print("[ sshman : Generating sessiRejectPolicyon ]")
         generate_session()
     elif args.update:
         print(f"[ sshman : Downloading latest version of sshman... ]")
