@@ -143,11 +143,11 @@ def download_latest(user: str, repo: str, path="./"):
 
 def main():
     parser = argparse.ArgumentParser(description="SSH Session Manager")
-    parser.add_argument("-G", "--generate-session", action="store_true", help="Generate a new SSH session")
-    parser.add_argument("-v", "--version", action="store_true", help="Outputs the current installed version and the latest version on github")
+    parser.add_argument("-gs", "--generate-session", action="store_true", help="Generate a new SSH session")
+    parser.add_argument("-rs", "--remove-session", type=str, help="Removes a session")
     parser.add_argument("-ls", "--sessions", help="Outputs all sessions", action="store_true")
-    parser.add_argument("-C", "--connect", type=str, help="Connect to a saved SSH session by name")
-    parser.add_argument("-R", "--remove-session", type=str, help="Removes a session")
+    parser.add_argument("-c", "--connect", type=str, help="Connect to a saved SSH session by name")
+    parser.add_argument("-v", "--version", action="store_true", help="Shows installed and latest version.")
     parser.add_argument("-u", "--update", help="Downloads the latest compiled version and installs it",
                         action="store_true")
 
