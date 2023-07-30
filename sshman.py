@@ -74,12 +74,7 @@ def get_latest_version(user: str, repo: str):
     if response.status_code == 200:
         release_data = response.json()
         vers = release_data["tag_name"]
-        curr = get_installed_version()
-        if not vers == curr:
-            return "[ sshman : There is a new update available! ]"
-        else:
-            return vers
-
+        return vers
     return "Unknown"
 
 def download_latest(user: str, repo: str, path="./"):
@@ -91,54 +86,60 @@ def download_latest(user: str, repo: str, path="./"):
     os_suffix = "linux" if os_name == "linux" else "win64"
     url = f"https://api.github.com/repos/{user}/{repo}/releases/latest"
     response = get(url)
+    ins_ver = get_installed_version()
+    lat_ver = get_latest_version(gh_username, repository)
 
-    if response.status_code == 200:
-        release_data = response.json()
-        assets = release_data["assets"]
-
-        # Find the correct asset for the user's OS
-        asset = next((a for a in assets if os_suffix in a["name"].lower()), None)
-        if not asset:
-            print(f"[ sshman: No release found for {os_name}. ]")
-            return
-
-        download_url = asset["browser_download_url"]
-        filename = os.path.join(path, asset["name"])
-
-        with get(download_url, stream=True) as download_response:
-            download_response.raise_for_status()
-            with open(filename, "wb") as f:
-                for chunk in download_response.iter_content(chunk_size=8192):
-                    f.write(chunk)
-
-        print(f"[ sshman: Successfully downloaded {asset['name']} to {path} ]")
-        downloaded_version = get_latest_version(gh_username, repository)
-        with tarfile.open(filename, "r:gz") as tar:
-            tar.extractall(path=path)
-
-        extracted_folder = os.path.splitext(asset["name"])[0]
-        extracted_sshman = os.path.join(path, "dist", "sshman")
-        target_sshman = os.path.expanduser("~/.sshm/.bin/sshman")
-
-        if os.path.exists(target_sshman):
-            os.remove(target_sshman)
-
-        shutil.move(extracted_sshman, target_sshman)
-        print("[ sshman: Moved binary to .sshm/.bin/ ]")
-
-        # Create the version file
-
-        version_file_path = os.path.join(os.path.expanduser("~/.sshm/.bin/"), "version")
-        with open(version_file_path, "w") as version_file:
-            version_file.write(downloaded_version)
-
-        # Clean up the extracted folder
-        shutil.rmtree(os.path.join(path, "dist/"))
-        if os.path.exists(filename):
-            os.remove(filename)
-        print("[ sshman: Cleaned up extracted files. ]")
+    if ins_ver == lat_ver:
+        return print("[ sshman : You already have the latest version downloaded. ]")
     else:
-        print(f"[ sshman: Failed to fetch release data. Status code: {response.status_code} ]")
+        if response.status_code == 200:
+            release_data = response.json()
+            assets = release_data["assets"]
+
+            # Find the correct asset for the user's OS
+            asset = next((a for a in assets if os_suffix in a["name"].lower()), None)
+            if not asset:
+                print(f"[ sshman: No release found for {os_name}. ]")
+                return
+
+            download_url = asset["browser_download_url"]
+            filename = os.path.join(path, asset["name"])
+
+            with get(download_url, stream=True) as download_response:
+                download_response.raise_for_status()
+                with open(filename, "wb") as f:
+                    for chunk in download_response.iter_content(chunk_size=8192):
+                        f.write(chunk)
+
+            print(f"[ sshman: Successfully downloaded {asset['name']} to {path} ]")
+            downloaded_version = get_latest_version(gh_username, repository)
+            with tarfile.open(filename, "r:gz") as tar:
+                tar.extractall(path=path)
+
+            extracted_folder = os.path.splitext(asset["name"])[0]
+            extracted_sshman = os.path.join(path, "dist", "sshman")
+            target_sshman = os.path.expanduser("~/.sshm/.bin/sshman")
+            version_file = os.path.expanduser("~/.sshm/.bin/version")
+
+            if os.path.exists(target_sshman):
+                os.remove(target_sshman)
+            if os.path.exists(version_file):
+                os.remove(version_file)
+
+            shutil.move(extracted_sshman, target_sshman)
+            print("[ sshman: Moved binary to .sshm/.bin/ ]")
+
+            version_file_path = os.path.join(os.path.expanduser("~/.sshm/.bin/"), "version")
+            with open(version_file_path, "w") as vf:
+                vf.write(downloaded_version)
+
+            # Clean up the extracted folder
+            shutil.rmtree(os.path.join(path, "dist/"))
+            if os.path.exists(filename):
+                os.remove(filename)
+            print("[ sshman: Cleaned up extracted files. ]")
+        else:
+            print(f"[ sshman: Failed to fetch release data. Status code: {response.status_code} ]")
 
 def main():
     parser = argparse.ArgumentParser(description="SSH Session Manager")
