@@ -7,5 +7,4 @@ Bin/
 *.spec
 dist/
 build/
-linux_build.sh
-win_build.sh
+build.sh
