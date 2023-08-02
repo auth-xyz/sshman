@@ -7,7 +7,7 @@ build_windows() {
     rm -rf build *.spec
     cd dist/
     cat ../Bin/win_install.bat >> ./install.bat
-    chmod +x sshman
+    chmod +x sshman.exe
     cd ..
     tar cfz "win64-$version.tar.gz" dist/*
     echo "[ sshman : Windows building process was finished ]"
@@ -31,6 +31,7 @@ clean_up() {
 
 build_windows
 clean_up
+sleep 1
 build_linux
 clean_up
 
