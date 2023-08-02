@@ -73,8 +73,8 @@ def get_latest_version(user: str, repo: str):
     response = get(url)
     if response.status_code == 200:
         release_data = response.json()
-        vers = release_data["tag_name"]
-        return vers
+        version = release_data["tag_name"]
+        return version
     return "Unknown"
 
 def download_latest(user: str, repo: str, path="./"):
@@ -116,7 +116,6 @@ def download_latest(user: str, repo: str, path="./"):
             with tarfile.open(filename, "r:gz") as tar:
                 tar.extractall(path=path)
 
-            extracted_folder = os.path.splitext(asset["name"])[0]
             extracted_sshman = os.path.join(path, "dist", "sshman")
             target_sshman = os.path.expanduser("~/.sshm/.bin/sshman")
             version_file = os.path.expanduser("~/.sshm/.bin/version")
@@ -154,7 +153,7 @@ def main():
     args = parser.parse_args()
 
     if args.generate_session:
-        print("[ sshman : Generating sessiRejectPolicyon ]")
+        print("[ sshman : Generating session ]")
         generate_session()
     elif args.update:
         print(f"[ sshman : Downloading latest version of sshman... ]")

@@ -4,7 +4,6 @@ from os import path, read
 from select import select
 from getpass import getpass
 from sys import stdout, stdin
-from termios import tcgetattr
 from base64 import b64encode, b64decode
 
 from paramiko import RSAKey, AuthenticationException, SSHException, SSHClient
@@ -23,14 +22,13 @@ class SessionManager:
     def connect_ssh(session_info, session_name):
         username = session_info[f"main-{session_name}"]["username"]
         host = session_info[f"main-{session_name}"]["host"]
-        key_path = session_info[f"main-{session_name}"].get("key", None)  # Use get() with a default value
+        key_path = session_info[f"main-{session_name}"].get("key", None)
 
         client = SSHClient()
         client.load_system_host_keys()
         client.set_missing_host_key_policy(AutoAddPolicy)
 
         try:
-            password = None
             saved_password = session_info[f"main-{session_name}"].get("password", None)
 
             if key_path:
@@ -44,27 +42,23 @@ class SessionManager:
                 save_password = input("[ sshman : Save password for future sessions? (y/n) ] ").lower()
 
                 if save_password == "y":
-                    # Encode the password in Base64 before saving it to the .toml file
+
                     encoded_password = SessionManager._encode_base64(password)
                     session_info[f"main-{session_name}"]["password"] = encoded_password
                     config_dir = path.expanduser(path.join("~", ".sshm"))
                     session_file = path.join(config_dir, f"{session_name}.toml")
 
                     # Save the updated session_info to the .toml file with the corresponding session name
-                    with open (session_file, "w") as toml_file:
+                    with open(session_file, "w") as toml_file:
                         dump(session_info, toml_file)
 
                 client.connect(hostname=host, username=username, password=password, port=22)
 
             channel = client.get_transport().open_session()
             channel.get_pty()  # Request a pseudo-terminal (PTY) for terminal support
-
-            # Now, let's set the terminal attributes of the local terminal to match the remote terminal
-            original_attrs = tcgetattr(stdin)
             setraw(stdin.fileno())
 
-            # Let's interact with the remote shell using the PTY channel
-            channel.exec_command("bash")  # Start an interactive bash shell
+            channel.exec_command("bash")
 
             while True:
                 r, _, _ = select([channel, stdin], [], [])
