@@ -8,3 +8,5 @@ Bin/
 dist/
 build/
 build.sh
+
+.idea/
