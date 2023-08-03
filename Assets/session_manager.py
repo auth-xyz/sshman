@@ -6,7 +6,7 @@ from sys import stdout, stdin
 from base64 import b64encode, b64decode
 
 from paramiko import RSAKey, AuthenticationException, SSHException, SSHClient
-from paramiko.client import AutoAddPolicy
+from paramiko.client import RejectPolicy
 
 class SessionManager:
     @staticmethod
@@ -25,7 +25,7 @@ class SessionManager:
 
         client = SSHClient()
         client.load_system_host_keys()
-        client.set_missing_host_key_policy(AutoAddPolicy)
+        client.set_missing_host_key_policy(RejectPolicy)
 
         try:
             saved_password = session_info[f"main-{session_name}"].get("password", None)
