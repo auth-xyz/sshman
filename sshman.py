@@ -6,18 +6,34 @@ import platform
 
 import toml
 import argparse
+
 from requests import get
+from logging import basicConfig, getLogger, INFO
+
 from Assets.config_manager import ConfigManager
 from Assets.session_manager import SessionManager
 
-gh_username, repository = "auth-xyz", "sshman"
+basicConfig(level=INFO, format="[%(levelname)s] %(message)s")
+logger = getLogger("sshman")
 
+GH_USERNAME, REPOSITORY = "auth-xyz", "sshman"
 def generate_session():
-    # Get session details from user input
     session_name = input("sshman : how do you want to name this session? ")
     username = input("sshman : input the username: ")
     host = input("sshman : input the host: ")
     key_path = input("sshman : input the key path (leave blank for password authentication): ")
+
+    if not session_name:
+        logger.error("Session name cannot be empty.")
+        return
+
+    if not username:
+        logger.error("Username cannot be empty.")
+        return
+
+    if not host:
+        logger.error("Host cannot be empty.")
+        return
 
     session_data = {
         "username": username,
@@ -30,8 +46,7 @@ def generate_session():
     config_manager.create_config_directory()
     config_manager.save_session_info(session_name, session_data_str)
 
-    print("sshman : Success!")
-
+    logger.info("Success!")
 
 def connect_session(session_name):
     # Step 1: Load the session data from the config file
@@ -46,7 +61,6 @@ def connect_session(session_name):
     ssh_command = session_manager.connect_ssh(session_data, session_name)
 
     return ssh_command
-
 
 def list_sessions():
     config_manager = ConfigManager()
@@ -87,7 +101,7 @@ def download_latest(user: str, repo: str, path="./"):
     url = f"https://api.github.com/repos/{user}/{repo}/releases/latest"
     response = get(url)
     ins_ver = get_installed_version()
-    lat_ver = get_latest_version(gh_username, repository)
+    lat_ver = get_latest_version(GH_USERNAME, REPOSITORY)
 
     if ins_ver == lat_ver:
         return print("[ sshman : You already have the latest version downloaded. ]")
@@ -105,40 +119,45 @@ def download_latest(user: str, repo: str, path="./"):
             download_url = asset["browser_download_url"]
             filename = os.path.join(path, asset["name"])
 
-            with get(download_url, stream=True) as download_response:
-                download_response.raise_for_status()
-                with open(filename, "wb") as f:
-                    for chunk in download_response.iter_content(chunk_size=8192):
-                        f.write(chunk)
+            try:
+                with get(download_url, stream=True) as download_response:
+                    download_response.raise_for_status()
+                    with open(filename, "wb") as f:
+                        for chunk in download_response.iter_content(chunk_size=8192):
+                            f.write(chunk)
 
-            print(f"[ sshman: Successfully downloaded {asset['name']} to {path} ]")
-            downloaded_version = get_latest_version(gh_username, repository)
-            with tarfile.open(filename, "r:gz") as tar:
-                tar.extractall(path=path)
+            except Exception as e:
+                logger.error(f"Failed to download the latest version. Error: {e}")
+                return
+            else:
+                logger.info(f"Successfully downloaded {asset['name']} to {path}")
+                downloaded_version = get_latest_version(GH_USERNAME, REPOSITORY)
+                with tarfile.open(filename, "r:gz") as tar:
+                    tar.extractall(path=path)
 
-            extracted_sshman = os.path.join(path, "dist", "sshman")
-            target_sshman = os.path.expanduser("~/.sshm/.bin/sshman")
-            version_file = os.path.expanduser("~/.sshm/.bin/version")
+                extracted_sshman = os.path.join(path, "dist", "sshman")
+                target_sshman = os.path.expanduser("~/.sshm/.bin/sshman")
+                version_file = os.path.expanduser("~/.sshm/.bin/version")
 
-            if os.path.exists(target_sshman):
-                os.remove(target_sshman)
-            if os.path.exists(version_file):
-                os.remove(version_file)
+                if os.path.exists(target_sshman):
+                    os.remove(target_sshman)
+                if os.path.exists(version_file):
+                    os.remove(version_file)
 
-            shutil.move(extracted_sshman, target_sshman)
-            print("[ sshman: Moved binary to .sshm/.bin/ ]")
+                shutil.move(extracted_sshman, target_sshman)
+                logger.info("Moved binary to .sshm/.bin/")
 
-            version_file_path = os.path.join(os.path.expanduser("~/.sshm/.bin/"), "version")
-            with open(version_file_path, "w") as vf:
-                vf.write(downloaded_version)
+                version_file_path = os.path.join(os.path.expanduser("~/.sshm/.bin/"), "version")
+                with open(version_file_path, "w") as vf:
+                    vf.write(downloaded_version)
 
-            # Clean up the extracted folder
-            shutil.rmtree(os.path.join(path, "dist/"))
-            if os.path.exists(filename):
-                os.remove(filename)
-            print("[ sshman: Cleaned up extracted files. ]")
-        else:
-            print(f"[ sshman: Failed to fetch release data. Status code: {response.status_code} ]")
+                # Clean up the extracted folder
+                shutil.rmtree(os.path.join(path, "dist/"))
+                if os.path.exists(filename):
+                    os.remove(filename)
+                    print("[ sshman: Cleaned up extracted files. ]")
+                else:
+                    print(f"[ sshman: Failed to fetch release data. Status code: {response.status_code} ]")
 
 def main():
     parser = argparse.ArgumentParser(description="SSH Session Manager")
@@ -153,26 +172,26 @@ def main():
     args = parser.parse_args()
 
     if args.generate_session:
-        print("[ sshman : Generating session ]")
+        logger.info("[ sshman : Generating session ]")
         generate_session()
     elif args.update:
-        print(f"[ sshman : Downloading latest version of sshman... ]")
-        download_latest(gh_username, repository, path="./")
+        logger.info(f"[ sshman : Downloading latest version of sshman... ]")
+        download_latest(GH_USERNAME, REPOSITORY, path="./")
     elif args.version:
         installed_version = get_installed_version()
-        latest_version = get_latest_version(gh_username, repository)
-        print(f"[ sshman : Installed version: {installed_version} | Latest version: {latest_version} ]")
+        latest_version = get_latest_version(GH_USERNAME, REPOSITORY)
+        logger.info(f"[ sshman : Installed version: {installed_version} | Latest version: {latest_version} ]")
     elif args.connect:
-        print(f"[ sshman : Connecting to session '{args.connect}' ]")
+        logger.info(f"[ sshman : Connecting to session '{args.connect}' ]")
         connect_session(args.connect)
     elif args.sessions:
         list_sessions()
     elif args.remove_session:
-        print(f"[ sshman : Removing session '{args.remove_session}' ]")
+        logger.info(f"[ sshman : Removing session '{args.remove_session}' ]")
         config_manager = ConfigManager()
         config_manager.remove_session(args.remove_session)
     else:
-        print("[ sshman : No valid option selected. Use --help for usage details. ]")
+        logger.error("[ sshman : No valid option selected. Use --help for usage details. ]")
 
 
 if __name__ == "__main__":
