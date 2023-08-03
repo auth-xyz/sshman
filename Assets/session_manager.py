@@ -1,5 +1,4 @@
 from toml import dump
-from tty import setraw
 from os import path, read
 from select import select
 from getpass import getpass
@@ -56,7 +55,6 @@ class SessionManager:
 
             channel = client.get_transport().open_session()
             channel.get_pty()  # Request a pseudo-terminal (PTY) for terminal support
-            setraw(stdin.fileno())
 
             channel.exec_command("bash")
 
