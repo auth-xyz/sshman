@@ -15,6 +15,8 @@ def main():
     parser = ArgumentParser(description="SSH Session Manager")
     parser.add_argument("-gs", "--generate-session", action="store_true", help="Generate a new SSH session")
     parser.add_argument("-rs", "--remove-session", type=str, help="Removes a session")
+    parser.add_argument("-is", "--import-session", type=str, help="Imports a exported session")
+    parser.add_argument("-es", "--export-session", type=str, help="Exports a generated-session")
     parser.add_argument("-ls", "--sessions", help="Outputs all sessions", action="store_true")
     parser.add_argument("-c", "--connect", type=str, help="Connect to a saved SSH session by name")
     parser.add_argument("-v", "--version", action="store_true", help="Shows installed and latest version.")
@@ -42,6 +44,12 @@ def main():
         logger.info(f"[ sshman : Removing session '{args.remove_session}' ]")
         config_manager = ConfigManager()
         config_manager.remove_session(args.remove_session)
+    elif args.export_session:
+        config_manager = ConfigManager()
+        config_manager.export_session_info(session_name=f"{args.export_session}", export_dir="./")
+    elif args.import_session:
+        config_manager = ConfigManager()
+        config_manager.import_session_info(session_name=f"{args.import_session}", import_file=f"./{args.import_session}")
     else:
         logger.error("[ sshman : No valid option selected. Use --help for usage details. ]")
 
