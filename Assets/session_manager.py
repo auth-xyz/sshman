@@ -1,4 +1,4 @@
-from toml import dump
+from toml import dump, loads, dumps
 from os import path, read
 from select import select
 from getpass import getpass
@@ -8,6 +8,9 @@ from base64 import b64encode, b64decode
 from paramiko import RSAKey, AuthenticationException, SSHException, SSHClient
 from paramiko.client import RejectPolicy
 
+from Assets.config_manager import ConfigManager
+
+
 class SessionManager:
     @staticmethod
     def _encode_base64(data):
@@ -16,6 +19,63 @@ class SessionManager:
     @staticmethod
     def _decode_base64(encoded_data):
         return b64decode(encoded_data).decode()
+
+    @staticmethod
+    def generate_session():
+        session_name = input("sshman : how do you want to name this session? ")
+        username = input("sshman : input the username: ")
+        host = input("sshman : input the host: ")
+        key_path = input("sshman : input the key path (leave blank for password authentication): ")
+
+        if not session_name:
+            print("Session name cannot be empty.")
+            return
+
+        if not username:
+            print("Username cannot be empty.")
+            return
+
+        if not host:
+            print("Host cannot be empty.")
+            return
+
+        session_data = {
+            "username": username,
+            "host": host,
+            "key": key_path if key_path else None,
+        }
+
+        session_data_str = dumps({"main-" + session_name: session_data})
+        config_manager = ConfigManager()
+        config_manager.create_config_directory()
+        config_manager.save_session_info(session_name, session_data_str)
+
+        print("Success!")
+
+    @staticmethod
+    def connect_session(session_name):
+        # Step 1: Load the session data from the config file
+        config_manager = ConfigManager()
+        session_data_str = config_manager.load_session_info(session_name)
+        if not session_data_str:
+            print(f"sshman : Session '{session_name}' not found.")
+            return
+
+        session_data = loads(session_data_str)
+        SessionManager.connect_ssh(session_data, session_name)
+
+    @staticmethod
+    def list_sessions():
+        config_manager = ConfigManager()
+        session_names = config_manager.load_all_session_names()
+
+        if not session_names:
+            print("[ sshman : No sessions found. ]")
+            return
+
+        print("[ sshman: Available sessions: ]")
+        for session_name in session_names:
+            print(f"---> {session_name}")
 
     @staticmethod
     def connect_ssh(session_info, session_name):

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-version="mount-temple"
+version="snow-dome"
 
 build_windows() {
     wine pyinstaller --onefile sshman.py

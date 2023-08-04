@@ -39,5 +39,5 @@ python sshman.py --sessions
 ```
 
 
-###### sshman, is a side project of mine that I decided to work on after thinking about it for a while, its a simple program that can be set up with 2 lines.
+###### sshman, is a side project of mine that I decided to work on after thinking about it for a while, it's a simple program that can be set up with 2 lines.
 
