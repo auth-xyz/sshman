@@ -28,13 +28,7 @@ class VersionManager:
         if response.status_code == 200:
             release_data = response.json()
             version = release_data["tag_name"]
-
-            # Checking if installed version is older than latest.
-            if current_installed != version:
-                logger.error("[ sshman : There is a new version of sshman available! ]\n")
-                return version
-            else:
-                return version
+            return version
 
         return "Unknown"
 
