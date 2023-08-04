@@ -53,7 +53,7 @@ def connect_session(session_name):
     config_manager = ConfigManager()
     session_data_str = config_manager.load_session_info(session_name)
     if not session_data_str:
-        print(f"sshman : Session '{session_name}' not found.")
+        logger.error(f"sshman : Session '{session_name}' not found.")
         return
 
     session_data = toml.loads(session_data_str)
@@ -67,10 +67,10 @@ def list_sessions():
     session_names = config_manager.load_all_session_names()
 
     if not session_names:
-        print("[ sshman : No sessions found. ]")
+        logger.info("[ sshman : No sessions found. ]")
         return
 
-    print("[ sshman: Available sessions: ]")
+    logger.info("[ sshman: Available sessions: ]")
     for session_name in session_names:
         print(f"- {session_name}")
 
@@ -85,10 +85,18 @@ def get_installed_version():
 def get_latest_version(user: str, repo: str):
     url = f"https://api.github.com/repos/{user}/{repo}/releases/latest"
     response = get(url)
+    current_installed = get_installed_version()
     if response.status_code == 200:
         release_data = response.json()
         version = release_data["tag_name"]
-        return version
+
+        # Checking if installed version is older than latest.
+        if current_installed != version:
+            logger.error("[ sshman : There is a new version of sshman available! ]\n")
+            return version
+        else:
+            return version
+
     return "Unknown"
 
 def download_latest(user: str, repo: str, path="./"):
@@ -104,7 +112,7 @@ def download_latest(user: str, repo: str, path="./"):
     lat_ver = get_latest_version(GH_USERNAME, REPOSITORY)
 
     if ins_ver == lat_ver:
-        return print("[ sshman : You already have the latest version downloaded. ]")
+        return logger.info("[ sshman : You already have the latest version downloaded. ]")
     else:
         if response.status_code == 200:
             release_data = response.json()
@@ -113,7 +121,7 @@ def download_latest(user: str, repo: str, path="./"):
             # Find the correct asset for the user's OS
             asset = next((a for a in assets if os_suffix in a["name"].lower()), None)
             if not asset:
-                print(f"[ sshman: No release found for {os_name}. ]")
+                logger.info(f"[ sshman: No release found for {os_name}. ]")
                 return
 
             download_url = asset["browser_download_url"]
@@ -145,7 +153,7 @@ def download_latest(user: str, repo: str, path="./"):
                     os.remove(version_file)
 
                 shutil.move(extracted_sshman, target_sshman)
-                logger.info("Moved binary to .sshm/.bin/")
+                logger.info("[ sshman : Moved binary to .sshm/.bin/]")
 
                 version_file_path = os.path.join(os.path.expanduser("~/.sshm/.bin/"), "version")
                 with open(version_file_path, "w") as vf:
@@ -155,9 +163,9 @@ def download_latest(user: str, repo: str, path="./"):
                 shutil.rmtree(os.path.join(path, "dist/"))
                 if os.path.exists(filename):
                     os.remove(filename)
-                    print("[ sshman: Cleaned up extracted files. ]")
+                    logger.info("[ sshman: Cleaned up extracted files. ]")
                 else:
-                    print(f"[ sshman: Failed to fetch release data. Status code: {response.status_code} ]")
+                    logger.info(f"[ sshman: Failed to fetch release data. Status code: {response.status_code} ]")
 
 def main():
     parser = argparse.ArgumentParser(description="SSH Session Manager")
