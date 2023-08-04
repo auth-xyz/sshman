@@ -72,7 +72,7 @@ def list_sessions():
 
     logger.info("[ sshman: Available sessions: ]")
     for session_name in session_names:
-        print(f"- {session_name}")
+        print(f"---> {session_name}")
 
 def get_installed_version():
     version_file = os.path.join(os.path.expanduser("~/.sshm/.bin/"), "version")
