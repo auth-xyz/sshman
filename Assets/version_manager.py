@@ -24,7 +24,6 @@ class VersionManager:
     def get_latest_version(user: str, repo: str):
         url = f"https://api.github.com/repos/{user}/{repo}/releases/latest"
         response = get(url)
-        current_installed = VersionManager.get_installed_version()
         if response.status_code == 200:
             release_data = response.json()
             version = release_data["tag_name"]
