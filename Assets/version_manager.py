@@ -10,6 +10,7 @@ logger = getLogger("sshman")
 
 GH_USERNAME, REPOSITORY = "auth-xyz", "sshman"
 
+
 class VersionManager:
     @staticmethod
     def get_installed_version():

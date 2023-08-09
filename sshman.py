@@ -11,6 +11,7 @@ logger = getLogger("sshman")
 
 GH_USERNAME, REPOSITORY = "auth-xyz", "sshman"
 
+
 def main():
     parser = ArgumentParser(description="SSH Session Manager")
     parser.add_argument("-gs", "--generate-session", action="store_true", help="Generate a new SSH session")
@@ -49,7 +50,8 @@ def main():
         config_manager.export_session_info(session_name=f"{args.export_session}", export_dir="./")
     elif args.import_session:
         config_manager = ConfigManager()
-        config_manager.import_session_info(session_name=f"{args.import_session}", import_file=f"./{args.import_session}")
+        config_manager.import_session_info(session_name=f"{args.import_session}",
+                                           import_file=f"./{args.import_session}")
     else:
         logger.error("[ sshman : No valid option selected. Use --help for usage details. ]")
 
