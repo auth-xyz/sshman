@@ -102,13 +102,11 @@ class SessionManager:
                 save_password = input("[ sshman : Save password for future sessions? (y/n) ] ").lower()
 
                 if save_password == "y":
-
                     encoded_password = SessionManager._encode_base64(password)
                     session_info[f"main-{session_name}"]["password"] = encoded_password
                     config_dir = path.expanduser(path.join("~", ".sshm"))
                     session_file = path.join(config_dir, f"{session_name}.toml")
 
-                    # Save the updated session_info to the .toml file with the corresponding session name
                     with open(session_file, "w") as toml_file:
                         dump(session_info, toml_file)
 
@@ -116,7 +114,7 @@ class SessionManager:
 
             channel = client.get_transport().open_session()
             channel.get_pty()  # Request a pseudo-terminal (PTY) for terminal support
-            setraw(stdin.fileno())
+            setraw(stdin.fileno())  # This line breaks win64 binaries, I'll eventually try to fix it.
 
             channel.exec_command("bash")
 
