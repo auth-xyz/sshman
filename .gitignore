@@ -1,6 +1,6 @@
 Assets/__pycache__/
 Assets/__pycache__/*.py[cod]
-
 venv/
 
+*.tar.gz
 poetry.lock
