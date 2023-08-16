@@ -6,8 +6,7 @@
 #### Prerequisites:
 > [Python 3.10+](https://python.org/downloads/)
 
-[!NOTE]
-
+**Note**
 You can download the binary release for ease of use [here](https://github.com/auth-xyz/sshman/releases)
 
 
