@@ -7,6 +7,7 @@
 > [Python 3.10+](https://python.org/downloads/)
 
 [!NOTE]
+
 You can download the binary release for ease of use [here](https://github.com/auth-xyz/sshman/releases)
 
 
