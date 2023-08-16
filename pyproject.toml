@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "sshman"
+version = "0.2.1b"
+description = "Simple SSH manager tool"
+authors = ["auth-xyz <smmc.auth@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+paramiko = "3.2.0"
+toml = "0.10.2"
+beautifulsoup4 = "4.12.2"
+httpx = "0.24.1"
+requests = "2.31.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

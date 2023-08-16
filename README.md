@@ -20,22 +20,22 @@ pip install -r requirements.txt
 
 * Generating Session:
 ```bash
-python sshman.py --generate-session
+python main.py --generate-session
 ```
 
 * Removing Session
 ```bash
-python sshman.py --remove-session <session-name>
+python main.py --remove-session <session-name>
 ```
 
 * Connecting to a session
 ```bash
-python sshman.py --connect <session-name>
+python main.py --connect <session-name>
 ```
 
 * Listing all sessions
 ```bash
-python sshman.py --sessions
+python main.py --sessions
 ```
 
 
