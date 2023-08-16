@@ -77,7 +77,7 @@ class VersionManager:
                     with tarfile.open(filename, "r:gz") as tar:
                         tar.extractall(path=path)
 
-                    extracted_sshman = os.path.join(path, "dist", "sshman")
+                    extracted_sshman = os.path.join(path, "sshman")
                     target_sshman = os.path.expanduser("~/.sshm/.bin/sshman")
                     version_file = os.path.expanduser("~/.sshm/.bin/version")
 
@@ -94,7 +94,7 @@ class VersionManager:
                         vf.write(downloaded_version)
 
                     # Clean up the extracted folder
-                    shutil.rmtree(os.path.join(path, "dist/"))
+                    #shutil.rmtree(os.path.join(path, "dist/"))
                     if os.path.exists(filename):
                         os.remove(filename)
                         logger.info("[ sshman: Cleaned up extracted files. ]")
