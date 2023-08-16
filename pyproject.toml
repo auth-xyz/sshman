@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sshman"
-version = "0.2.1b"
+version = "0.2.1"
 description = "Simple SSH manager tool"
 authors = ["auth-xyz <smmc.auth@gmail.com>"]
 readme = "README.md"
