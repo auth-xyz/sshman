@@ -6,10 +6,6 @@
 #### Prerequisites:
 > [Python 3.10+](https://python.org/downloads/)
 
-> [!NOTE]
-> You can download the binary release for ease of use [here](https://github.com/auth-xyz/sshman/releases)
-
-
 #### Installation:
 
 ```bash
@@ -17,6 +13,10 @@ git clone https://github.com/auth-xyz/sshman
 cd sshman/
 pip install -r requirements.txt
 ```
+
+> [!NOTE]
+> You can download the binary release for ease of use [here](https://github.com/auth-xyz/sshman/releases)
+
 
 #### Usage:
 
