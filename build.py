@@ -14,7 +14,7 @@ system = system()
 
 version = "snow-dome"
 binary_name = "sshman"
-output_tar = f"{version}.tar.gz"
+output_tar = f"linux-{version}.tar.gz"
 
 
 def run_pyinstaller(args):
