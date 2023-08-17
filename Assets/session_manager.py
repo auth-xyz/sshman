@@ -1,3 +1,5 @@
+from subprocess import run, TimeoutExpired
+
 from toml import dump, loads, dumps
 from tty import setraw
 from os import path, read
@@ -10,6 +12,10 @@ from paramiko import RSAKey, AuthenticationException, SSHException, SSHClient
 from paramiko.client import RejectPolicy
 
 from Assets.config_manager import ConfigManager
+from logging import basicConfig, getLogger, INFO
+
+basicConfig(level=INFO, format="[%(levelname)s] %(message)s")
+logger = getLogger("sshman")
 
 
 class SessionManager:
@@ -20,6 +26,14 @@ class SessionManager:
     @staticmethod
     def _decode_base64(encoded_data):
         return b64decode(encoded_data).decode()
+
+    @staticmethod
+    def is_host_up(host):
+        try:
+            response = run(["ping", "-c", "1", host], capture_output=True, text=True, timeout=5)
+            return response.returncode == 0
+        except TimeoutExpired:
+            return False
 
     @staticmethod
     def generate_session():
@@ -39,6 +53,12 @@ class SessionManager:
         if not host:
             print("Host cannot be empty.")
             return
+
+        if not SessionManager.is_host_up(host):
+            user_choice = input("Host is not reachable. Do you want to continue generating the session? (y/n): ")
+            if user_choice.lower() != "y":
+                return
+
 
         session_data = {
             "username": username,
@@ -73,9 +93,9 @@ class SessionManager:
             print("[ sshman : No sessions found. ]")
             return
 
-        print("[ sshman: Available sessions: ]")
+        print("[ sshman: Available sessions: ]\n")
         for session_name in session_names:
-            print(f"---> {session_name}")
+            print(f"[-> {session_name} ]")
 
     @staticmethod
     def connect_ssh(session_info, session_name):
@@ -141,3 +161,4 @@ class SessionManager:
             print(f"[ sshman : Error: {e} ]")
         finally:
             client.close()
+
