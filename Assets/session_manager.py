@@ -55,7 +55,6 @@ class SessionManager:
 
     @staticmethod
     def connect_session(session_name):
-        # Step 1: Load the session data from the config file
         config_manager = ConfigManager()
         session_data_str = config_manager.load_session_info(session_name)
         if not session_data_str:
@@ -113,7 +112,7 @@ class SessionManager:
                 client.connect(hostname=host, username=username, password=password, port=22)
 
             channel = client.get_transport().open_session()
-            channel.get_pty()  # Request a pseudo-terminal (PTY) for terminal support
+            channel.get_pty()
             setraw(stdin.fileno())  # This line breaks win64 binaries, I'll eventually try to fix it.
 
             channel.exec_command("bash")

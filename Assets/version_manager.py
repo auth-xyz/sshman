@@ -39,7 +39,7 @@ class VersionManager:
             print(f"[ sshman: Unsupported OS '{os_name}'. Only Linux and Windows are supported. ]")
             return
 
-        os_suffix = "linux" if os_name == "linux" else "win64"
+        os_suffix = "linux" if os_name == "linux" else "windows"
         url = f"https://api.github.com/repos/{user}/{repo}/releases/latest"
         response = get(url)
         ins_ver = VersionManager.get_installed_version()
@@ -93,8 +93,6 @@ class VersionManager:
                     with open(version_file_path, "w") as vf:
                         vf.write(downloaded_version)
 
-                    # Clean up the extracted folder
-                    #shutil.rmtree(os.path.join(path, "dist/"))
                     if os.path.exists(filename):
                         os.remove(filename)
                         logger.info("[ sshman: Cleaned up extracted files. ]")
