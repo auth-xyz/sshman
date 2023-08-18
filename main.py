@@ -20,6 +20,8 @@ def main():
     parser.add_argument("-es", "--export-session", type=str, help="Exports a generated-session")
     parser.add_argument("-ls", "--sessions", help="Outputs all sessions", action="store_true")
     parser.add_argument("-c", "--connect", type=str, help="Connect to a saved SSH session by name")
+    parser.add_argument("--unsafe", action="store_true")
+    parser.add_argument("--safe", action="store_true")
     parser.add_argument("-v", "--version", action="store_true", help="Shows installed and latest version.")
     parser.add_argument("-u", "--update", help="Downloads the latest compiled version and installs it",
                         action="store_true")
@@ -38,7 +40,11 @@ def main():
         logger.info(f"[ sshman : Installed version: {installed_version} | Latest version: {latest_version} ]")
     elif args.connect:
         logger.info(f"[ sshman : Connecting to session '{args.connect}' ]")
-        SessionManager.connect_session(args.connect)
+        if args.unsafe:
+            SessionManager.unsafe_session(args.connect)
+        else:
+            SessionManager.connect_session(args.connect)
+
     elif args.sessions:
         SessionManager.list_sessions()
     elif args.remove_session:
