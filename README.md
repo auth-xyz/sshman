@@ -21,6 +21,7 @@ poetry run python build.py # Actually building
 ```
 #### Installation (Linux)
 ```bash
+# Extracting the downloaded binary / built binary
 tar xfz <version>.tar.gz
 
 # First way
