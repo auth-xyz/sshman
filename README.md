@@ -1,45 +1,56 @@
 # SSH Session Manager
 
-### A simple Python-based SSH session manager to facilitate easy connection to SSH hosts. This project allows you to generate, connect, list, and remove SSH sessions by saving them as TOML files.
-
+### A simple CLI tool to manage and connect to SSH clients.
 
 #### Prerequisites:
-> [Python 3.10+](https://python.org/downloads/)
+*  [Python 3.10+](https://python.org/downloads/)
+*  [Poetry 1.5+](https://github.com/python-poetry/poetry) (optional)
 
-#### Installation:
+
+#### Building from source
 
 ```bash
+# Cloning repository
 git clone https://github.com/auth-xyz/sshman
-cd sshman/
-pip install -r requirements.txt
+cd sshman
+# Installing dependecies
+poetry install #using poetry
+pip install toml paramiko httpx beautifulsoup4 #using pip
+
+poetry run python build.py # Actually building
+```
+#### Installation (Linux)
+```bash
+tar xfz <version>.tar.gz
+
+# First way
+sudo ln -s path/to/sshman /usr/bin/sshman
+# Easier way
+sudo mv path/to/sshman /usr/bin/
 ```
 
 > [!NOTE]
-> You can download the binary release for ease of use [here](https://github.com/auth-xyz/sshman/releases)
+> Of course you can also download the binary from the [github release page](https://github.com/auth-xyz/sshman/releases)
 
+#### Usage
+###### (this uses the already installed binary, it may be different in your case.)
+```
+# Generating session
+sshman -gs
+sshman --generate-session
 
-#### Usage:
+# Removing a generated session
+sshman -rs <session>
+sshman --remove-session <session>
 
-* Generating Session:
-```bash
-python main.py --generate-session
+# Connecting to a session
+sshman -c <session> --safe #default
+sshman --connect <session> --unsafe # unsafe is when you haven't connected to this server yet
+
+# Other helpful commands that are self-explained
+sshman -ls / --list-sessions 
+sshman -u / --update
+sshman -v / --version
 ```
 
-* Removing Session
-```bash
-python main.py --remove-session <session-name>
-```
-
-* Connecting to a session
-```bash
-python main.py --connect <session-name>
-```
-
-* Listing all sessions
-```bash
-python main.py --sessions
-```
-
-
-###### sshman, is a side project of mine that I decided to work on after thinking about it for a while, it's a simple program that can be set up with 2 lines.
-
+###### If you'd like to contribute, feel free to do so!
