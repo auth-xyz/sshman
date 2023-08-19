@@ -31,7 +31,7 @@ sudo mv path/to/sshman /usr/bin/
 ```
 
 > [!NOTE]
-> Of course you can also download the binary from the [GitHub release page](https://github.com/auth-xyz/sshman/releases)
+> Of course you can also download the compiled binary from the [GitHub release page](https://github.com/auth-xyz/sshman/releases)
 
 #### General Usage
 ```bash
