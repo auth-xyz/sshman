@@ -51,10 +51,10 @@ class SessionManager:
 
     @staticmethod
     def generate_session():
-        session_name = input("sshman : how do you want to name this session? ")
-        username = input("sshman : input the username: ")
-        host = input("sshman : input the host: ")
-        key_path = input("sshman : input the key path (leave blank for password authentication): ")
+        session_name = input("[ sshman : how do you want to name this session? ]")
+        username = input("[ sshman : input the username: ]")
+        host = input("[ sshman : input the host: ]")
+        key_path = input("[ sshman : input the key path (leave blank for password authentication): ]")
 
         if not session_name:
             print("Session name cannot be empty.")
@@ -69,7 +69,7 @@ class SessionManager:
             return
 
         if not SessionManager.is_host_up(host):
-            user_choice = input("Host is not reachable. Do you want to continue generating the session? (y/n): ")
+            user_choice = input("[ sshman : Host is not reachable. Still want to proceed? (y/n) ]\n> ")
             if user_choice.lower() != "y":
                 return
 

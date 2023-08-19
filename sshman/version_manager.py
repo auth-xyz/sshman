@@ -30,7 +30,7 @@ class VersionManager:
             version = release_data["tag_name"]
             return version
 
-        return "Unknown"
+        return 'Unknown'
 
     @staticmethod
     def download_latest(user: str, repo: str, path="./"):
@@ -69,10 +69,10 @@ class VersionManager:
                                 f.write(chunk)
 
                 except Exception as e:
-                    logger.error(f"Failed to download the latest version. Error: {e}")
+                    logger.error(f"[ sshman : Failed to download the latest version. Error: {e}]")
                     return
                 else:
-                    logger.info(f"Successfully downloaded {asset['name']} to {path}")
+                    logger.info(f"[ sshman : Finished downloading: {asset['name']} ]")
                     downloaded_version = VersionManager.get_latest_version(GH_USERNAME, REPOSITORY)
                     with tarfile.open(filename, "r:gz") as tar:
                         tar.extractall(path=path)
