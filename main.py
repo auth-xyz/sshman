@@ -2,9 +2,9 @@
 from argparse import ArgumentParser
 from logging import basicConfig, getLogger, INFO
 
-from Assets.config_manager import ConfigManager
-from Assets.session_manager import SessionManager
-from Assets.version_manager import VersionManager
+from sshman.config_manager import ConfigManager
+from sshman.session_manager import SessionManager
+from sshman.version_manager import VersionManager
 
 basicConfig(level=INFO, format="[%(levelname)s] %(message)s")
 logger = getLogger("sshman")
@@ -41,7 +41,7 @@ def main():
     elif args.connect:
         logger.info(f"[ sshman : Connecting to session '{args.connect}' ]")
         if args.unsafe:
-            SessionManager.unsafe_session(args.connect)
+            SessionManager.unsafe_ssh(args.connect)
         else:
             SessionManager.connect_session(args.connect)
 

@@ -11,7 +11,7 @@ from base64 import b64encode, b64decode
 from paramiko import RSAKey, AuthenticationException, SSHException, SSHClient
 from paramiko.client import RejectPolicy, AutoAddPolicy
 
-from Assets.config_manager import ConfigManager
+from sshman.config_manager import ConfigManager
 from logging import basicConfig, getLogger, INFO
 
 basicConfig(level=INFO, format="[%(levelname)s] %(message)s")
@@ -197,7 +197,7 @@ class SessionManager:
 
             channel = client.get_transport().open_session()
             channel.get_pty()
-            setraw(stdin.fileno()) 
+            setraw(stdin.fileno())
 
             channel.exec_command("bash")
 

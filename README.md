@@ -13,7 +13,7 @@
 # Cloning repository
 git clone https://github.com/auth-xyz/sshman
 cd sshman
-# Installing dependecies
+# Installing dependencies
 poetry install #using poetry
 pip install toml paramiko httpx beautifulsoup4 #using pip
 
@@ -31,11 +31,10 @@ sudo mv path/to/sshman /usr/bin/
 ```
 
 > [!NOTE]
-> Of course you can also download the binary from the [github release page](https://github.com/auth-xyz/sshman/releases)
+> Of course you can also download the binary from the [GitHub release page](https://github.com/auth-xyz/sshman/releases)
 
-#### Usage
-###### (this uses the already installed binary, it may be different in your case.)
-```
+#### General Usage
+```bash
 # Generating session
 sshman -gs
 sshman --generate-session
