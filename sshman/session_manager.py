@@ -1,18 +1,17 @@
-from subprocess import run, TimeoutExpired
-
-from toml import dump, loads, dumps
-from tty import setraw
+from getpass import getpass
+from logging import basicConfig, getLogger, INFO
 from os import path, read
 from select import select
-from getpass import getpass
+from subprocess import run, TimeoutExpired
 from sys import stdout, stdin
-from base64 import b64encode, b64decode
+from tty import setraw
 
+from binascii import hexlify, unhexlify
 from paramiko import RSAKey, AuthenticationException, SSHException, SSHClient
 from paramiko.client import RejectPolicy, AutoAddPolicy
+from toml import dump, loads, dumps
 
 from sshman.config_manager import ConfigManager
-from logging import basicConfig, getLogger, INFO
 
 basicConfig(level=INFO, format="[%(levelname)s] %(message)s")
 logger = getLogger("sshman")
@@ -20,12 +19,27 @@ logger = getLogger("sshman")
 
 class SessionManager:
     @staticmethod
-    def _encode_base64(data):
-        return b64encode(data.encode()).decode()
+    def _encode_data(input_string):
+        prefix = "se:"
+        binary_data = input_string.encode('utf-8')
+        hex_data = hexlify(binary_data).decode('utf-8')
+        half_length = len(hex_data) // 2
+        beginning_half = hex_data[:half_length]
+        ending_half = hex_data[half_length:]
+        transformed_hex_data = ending_half + beginning_half
+        return prefix + transformed_hex_data
 
     @staticmethod
-    def _decode_base64(encoded_data):
-        return b64decode(encoded_data).decode()
+    def _decode_data(hex_data):
+        prefix = "se:"
+        hex_data = hex_data[len(prefix):]  # Remove the prefix
+        half_length = len(hex_data) // 2
+        ending_half = hex_data[:half_length]
+        beginning_half = hex_data[half_length:]
+        transformed_hex_data = beginning_half + ending_half
+        binary_data = unhexlify(transformed_hex_data)
+        output_string = binary_data.decode('utf-8')
+        return output_string
 
     @staticmethod
     def is_host_up(host):
@@ -113,14 +127,14 @@ class SessionManager:
                 key = RSAKey.from_private_key_file(key_path)
                 client.connect(hostname=host, username=username, pkey=key, port=22)
             elif saved_password:
-                password = SessionManager._decode_base64(saved_password)
+                password = SessionManager._decode_data(saved_password)
                 client.connect(hostname=host, username=username, password=password, port=22)
             else:
                 password = getpass("[ sshman : Input your password ] ")
                 save_password = input("[ sshman : Save password for future sessions? (y/n) ] ").lower()
 
                 if save_password == "y":
-                    encoded_password = SessionManager._encode_base64(password)
+                    encoded_password = SessionManager._encode_data(password)
                     session_info[f"main-{session_name}"]["password"] = encoded_password
                     config_dir = path.expanduser(path.join("~", ".sshm"))
                     session_file = path.join(config_dir, f"{session_name}.toml")
@@ -178,14 +192,14 @@ class SessionManager:
                 key = RSAKey.from_private_key_file(key_path)
                 client.connect(hostname=host, username=username, pkey=key, port=22)
             elif saved_password:
-                password = SessionManager._decode_base64(saved_password)
+                password = SessionManager._decode_data(saved_password)
                 client.connect(hostname=host, username=username, password=password, port=22)
             else:
                 password = getpass("[ sshman : Input your password ] ")
                 save_password = input("[ sshman : Save password for future sessions? (y/n) ] ").lower()
 
                 if save_password == "y":
-                    encoded_password = SessionManager._encode_base64(password)
+                    encoded_password = SessionManager._encode_data(password)
                     session_info[f"main-{session_name}"]["password"] = encoded_password
                     config_dir = path.expanduser(path.join("~", ".sshm"))
                     session_file = path.join(config_dir, f"{session_name}.toml")
