@@ -2,5 +2,8 @@ sshman/__pycache__/
 Assets/__pycache__/*.py[cod]
 venv/
 
+build/*
+dist/*
+
 *.tar.gz
 poetry.lock

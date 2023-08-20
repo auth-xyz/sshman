@@ -33,11 +33,9 @@ def create_tar_gz(filename, files):
 def cleanup():
     dist_path = root_path / "dist"
     build_path = root_path / "build"
-    spec_file = root_path / f"{binary_name}.spec"
 
     rmtree(dist_path, ignore_errors=True)
     rmtree(build_path, ignore_errors=True)
-    #spec_file.unlink(missing_ok=True)
 
 
 if __name__ == "__main__":
