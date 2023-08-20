@@ -37,7 +37,7 @@ def cleanup():
 
     rmtree(dist_path, ignore_errors=True)
     rmtree(build_path, ignore_errors=True)
-    spec_file.unlink(missing_ok=True)
+    #spec_file.unlink(missing_ok=True)
 
 
 if __name__ == "__main__":
