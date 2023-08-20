@@ -12,7 +12,7 @@ logger = getLogger("sshman")
 root_path = Path(__file__).parent
 system = system()
 
-version = "snow-dome"
+version = "vancouver"
 binary_name = "sshman"
 output_tar = f"{system.lower()}-{version}.tar.gz"
 
