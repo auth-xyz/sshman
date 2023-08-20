@@ -6,8 +6,12 @@ License:  MIT
 URL:      https://github.com/auth-xyz/sshman
 Source0:  https://github.com/auth-xyz/sshman/releases/download/v0.2.4/linux-snow-dome.tar.gz
 
+<<<<<<< HEAD
 BuildRequires: python3
 BuildRequires: wget
+=======
+BuildRequires: python3 wget
+>>>>>>> refs/remotes/origin/main
 
 Requires(post): info
 Requires(preun): info
