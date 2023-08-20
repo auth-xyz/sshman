@@ -43,7 +43,7 @@ def main():
         if args.unsafe:
             SessionManager.unsafe_ssh(args.connect)
         else:
-            SessionManager.connect_session(args.connect)
+            SessionManager.safe_ssh(args.connect)
 
     elif args.sessions:
         SessionManager.list_sessions()
