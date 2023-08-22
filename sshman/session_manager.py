@@ -75,24 +75,18 @@ class SessionManager:
         config_manager.create_config_directory()
         config_manager.save_session_info(session_name, session_data_str)
 
-        print("Success!")
+        logger.info("[ sshman : Successfully generated new session! ]")
 
     @staticmethod
     def connect_session(session_name):
         config_manager = ConfigManager()
         session_data_str = config_manager.load_session_info(session_name)
         if not session_data_str:
-            print(f"[ sshman : Session '{session_name}' not found. ]")
+            logger.info(f"[ sshman : Session '{session_name}' not found. ]")
             return
 
         session_data = loads(session_data_str)
-        SessionManager.safe_ssh(session_data, session_name)
-
-    def unsafe_ssh(self, session_info, session_name):
-        self._ssh_connection(session_info, session_name, policy=AutoAddPolicy)
-
-    def safe_ssh(self, session_info, session_name):
-        self._ssh_connection(session_info, session_name, policy=RejectPolicy)
+        SessionManager._ssh_connection(session_data, session_name, policy=RejectPolicy)
 
     @staticmethod
     def list_sessions():
@@ -127,7 +121,7 @@ class SessionManager:
                 password = SessionManager._decode_data(saved_password)
                 client.connect(hostname=host, username=username, password=password, port=22)
             else:
-                password = getpass.getpass("[ sshman : Input your password ] ")
+                password = getpass.getpass("[ sshman : Input your password ]\n> ")
                 save_password = input("[ sshman : Save password for future sessions? (y/n) ] ").lower()
 
                 if save_password == "y":

@@ -40,10 +40,7 @@ def main():
         logger.info(f"[ sshman : Installed version: {installed_version} | Latest version: {latest_version} ]")
     elif args.connect:
         logger.info(f"[ sshman : Connecting to session '{args.connect}' ]")
-        if args.unsafe:
-            SessionManager.unsafe_ssh(args.connect)
-        else:
-            SessionManager.safe_ssh(args.connect)
+        SessionManager.connect_session(args.connect)
 
     elif args.sessions:
         SessionManager.list_sessions()
