@@ -9,7 +9,7 @@ from tty import setraw
 from binascii import hexlify, unhexlify
 from paramiko import RSAKey, AuthenticationException, SSHException, SSHClient
 from paramiko.client import RejectPolicy, AutoAddPolicy
-from toml import dump, loads
+from toml import dump, dumps, loads
 from sshman.config_manager import ConfigManager
 
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
@@ -50,10 +50,10 @@ class SessionManager:
 
     @staticmethod
     def generate_session():
-        session_name = input("[ sshman : how do you want to name this session? ]")
-        username = input("[ sshman : input the username: ]")
-        host = input("[ sshman : input the host: ]")
-        key_path = input("[ sshman : input the key path (leave blank for password authentication): ]")
+        session_name = input("[ sshman : how do you want to name this session? ] ")
+        username = input("[ sshman : input the username: ] ")
+        host = input("[ sshman : input the host: ] ")
+        key_path = input("[ sshman : input the key path (leave blank for password authentication): ] ")
 
         if not session_name or not username or not host:
             print("Session name, username, and host cannot be empty.")
@@ -70,15 +70,14 @@ class SessionManager:
             "key": key_path if key_path else None,
         }
 
-        session_data_str = dump({"main-" + session_name: session_data})
+        session_data_str = dumps({"main-" + session_name: session_data})
         config_manager = ConfigManager()
         config_manager.create_config_directory()
         config_manager.save_session_info(session_name, session_data_str)
 
         logger.info("[ sshman : Successfully generated new session! ]")
 
-    @staticmethod
-    def connect_session(session_name):
+    def connect_session(self, session_name):
         config_manager = ConfigManager()
         session_data_str = config_manager.load_session_info(session_name)
         if not session_data_str:
@@ -86,7 +85,7 @@ class SessionManager:
             return
 
         session_data = loads(session_data_str)
-        SessionManager._ssh_connection(session_data, session_name, policy=RejectPolicy)
+        self.ssh_connection(session_data, session_name)
 
     @staticmethod
     def list_sessions():
@@ -102,42 +101,43 @@ class SessionManager:
             print(f"[-> {session_name} ]")
 
     @staticmethod
-    def _ssh_connection(session_info, session_name, policy):
-        username = session_info.get("username")
-        host = session_info.get("host")
-        key_path = session_info.get("key")
+    def ssh_connection(session_data: dict, session_name):
+        username = session_data[f"main-{session_name}"].get("username")
+        host = session_data[f"main-{session_name}"].get("host")
+        key_path = session_data[f"main-{session_name}"].get("key")
 
         client = SSHClient()
         client.load_system_host_keys()
-        client.set_missing_host_key_policy(policy)
+        client.set_missing_host_key_policy(RejectPolicy)
 
         try:
-            saved_password = session_info.get("password", None)
+            saved_password = session_data.get("password", None)
 
             if key_path:
                 key = RSAKey.from_private_key_file(key_path)
                 client.connect(hostname=host, username=username, pkey=key, port=22)
+
             elif saved_password:
                 password = SessionManager._decode_data(saved_password)
                 client.connect(hostname=host, username=username, password=password, port=22)
             else:
-                password = getpass.getpass("[ sshman : Input your password ]\n> ")
+                password = getpass.getpass("[ sshman : Input your password ] ")
                 save_password = input("[ sshman : Save password for future sessions? (y/n) ] ").lower()
 
                 if save_password == "y":
                     encoded_password = SessionManager._encode_data(password)
-                    session_info["password"] = encoded_password
+                    session_data["password"] = encoded_password
                     config_dir = os.path.expanduser(os.path.join("~", ".sshm"))
                     session_file = os.path.join(config_dir, f"{session_name}.toml")
 
                     with open(session_file, "w") as toml_file:
-                        dump({"main-" + session_name: session_info}, toml_file)
+                        dump({"main-" + session_name: session_data}, toml_file)
 
                 client.connect(hostname=host, username=username, password=password, port=22)
 
             channel = client.get_transport().open_session()
             channel.get_pty()
-            setraw(sys.stdin.fileno())  # This line breaks win64 binaries, I'll eventually try to fix it.
+            setraw(sys.stdin.fileno())
 
             channel.exec_command("bash")
 
@@ -158,10 +158,20 @@ class SessionManager:
             channel.close()
 
         except AuthenticationException:
-            print("[ sshman : Authentication failed. ]")
+            print("[ sshman/error : Authentication failed. ]")
         except SSHException as e:
-            print(f"[ sshman : SSH error: {e} ]")
+            print(f"[ sshman/ssh.error :  {e} ]")
         except Exception as e:
-            print(f"[ sshman : Error: {e} ]")
+            print(f"[ sshman/error : {e} ]")
         finally:
             client.close()
+
+    @staticmethod
+    def show_session(session_name):
+        cfm = ConfigManager()
+        data = cfm.load_session_info(session_name=session_name)
+
+        if data is None:
+            return IOError(f"[ sshman/error : {session_name} is not a session. ]")
+
+        return print(f"\n{data}")

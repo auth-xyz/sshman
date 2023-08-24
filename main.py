@@ -20,8 +20,7 @@ def main():
     parser.add_argument("-es", "--export-session", type=str, help="Exports a generated-session")
     parser.add_argument("-ls", "--sessions", help="Outputs all sessions", action="store_true")
     parser.add_argument("-c", "--connect", type=str, help="Connect to a saved SSH session by name")
-    parser.add_argument("--unsafe", action="store_true")
-    parser.add_argument("--safe", action="store_true")
+    parser.add_argument("-i", "--info", type=str, help="Outputs the session info")
     parser.add_argument("-v", "--version", action="store_true", help="Shows installed and latest version.")
     parser.add_argument("-u", "--update", help="Downloads the latest compiled version and installs it",
                         action="store_true")
@@ -31,6 +30,9 @@ def main():
     if args.generate_session:
         logger.info("[ sshman : Generating session ]")
         SessionManager.generate_session()
+    elif args.info:
+        logger.info(f"[ sshman : Information about {args.info} ]")
+        SessionManager.show_session(args.info)
     elif args.update:
         logger.info(f"[ sshman : Downloading latest version of sshman... ]")
         VersionManager.download_latest(GH_USERNAME, REPOSITORY, path="./")
@@ -39,9 +41,9 @@ def main():
         latest_version = VersionManager.get_latest_version(GH_USERNAME, REPOSITORY)
         logger.info(f"[ sshman : Installed version: {installed_version} | Latest version: {latest_version} ]")
     elif args.connect:
+        sm = SessionManager()
         logger.info(f"[ sshman : Connecting to session '{args.connect}' ]")
-        SessionManager.connect_session(args.connect)
-
+        sm.connect_session(args.connect)
     elif args.sessions:
         SessionManager.list_sessions()
     elif args.remove_session:
