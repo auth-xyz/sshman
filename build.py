@@ -33,9 +33,11 @@ def create_tar_gz(filename, files):
 def cleanup():
     dist_path = root_path / "dist"
     build_path = root_path / "build"
+    specfile = root_path / "sshman.spec"
 
     rmtree(dist_path, ignore_errors=True)
     rmtree(build_path, ignore_errors=True)
+    rmtree(specfile, ignore_errors=True)
 
 
 if __name__ == "__main__":
