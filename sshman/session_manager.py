@@ -8,7 +8,7 @@ import getpass
 from tty import setraw
 from binascii import hexlify, unhexlify
 from paramiko import RSAKey, AuthenticationException, SSHException, SSHClient
-from paramiko.client import RejectPolicy, AutoAddPolicy
+from paramiko.client import RejectPolicy
 from toml import dump, dumps, loads
 from sshman.config_manager import ConfigManager
 
