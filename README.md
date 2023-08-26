@@ -6,6 +6,9 @@
 *  [Python 3.10+](https://python.org/downloads/)
 *  [Poetry 1.5+](https://github.com/python-poetry/poetry) (optional)
 
+> [!NOTE]
+> Of course you can also download the compiled binary from the [GitHub release page](https://github.com/auth-xyz/sshman/releases)
+
 
 #### Building from source
 
@@ -29,9 +32,6 @@ sudo ln -s path/to/sshman /usr/bin/sshman
 # Easier way
 sudo mv path/to/sshman /usr/bin/
 ```
-
-> [!NOTE]
-> Of course you can also download the compiled binary from the [GitHub release page](https://github.com/auth-xyz/sshman/releases)
 
 #### General Usage
 ```bash
