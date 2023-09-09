@@ -17,6 +17,11 @@ logger = logging.getLogger("sshman")
 
 
 class SessionManager:
+    PROMPT_SESSION_NAME = "[ sshman : how do you want to name this session? ] "
+    PROMPT_USERNAME = "[ sshman : input the username: ] "
+    PROMPT_HOST = "[ sshman : input the host: ] "
+    PROMPT_KEY_PATH = "[ sshman : input the key path (leave blank for password authentication): ] "
+
     @staticmethod
     def _encode_data(input_string):
         prefix = "se:"
@@ -45,15 +50,17 @@ class SessionManager:
         try:
             response = subprocess.run(["ping", "-c", "1", host], capture_output=True, text=True, timeout=5, check=True)
             return response.returncode == 0
-        except (subprocess.TimeoutExpired, subprocess.CalledProcessError):
+        except subprocess.TimeoutExpired:
+            return False
+        except subprocess.CalledProcessError:
             return False
 
     @staticmethod
     def generate_session():
-        session_name = input("[ sshman : how do you want to name this session? ] ")
-        username = input("[ sshman : input the username: ] ")
-        host = input("[ sshman : input the host: ] ")
-        key_path = input("[ sshman : input the key path (leave blank for password authentication): ] ")
+        session_name = input(SessionManager.PROMPT_SESSION_NAME)
+        username = input(SessionManager.PROMPT_USERNAME)
+        host = input(SessionManager.PROMPT_HOST)
+        key_path = input(SessionManager.PROMPT_KEY_PATH)
 
         if not session_name or not username or not host:
             print("Session name, username, and host cannot be empty.")
