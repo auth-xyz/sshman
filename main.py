@@ -16,8 +16,8 @@ def main():
     parser = ArgumentParser(description="SSH Session Manager")
     parser.add_argument("-gs", "--generate-session", action="store_true", help="Generate a new SSH session")
     parser.add_argument("-rs", "--remove-session", type=str, help="Removes a session")
-    parser.add_argument("-is", "--import-session", type=str, help="Imports a exported session")
-    parser.add_argument("-es", "--export-session", type=str, help="Exports a generated-session")
+    parser.add_argument("-is", "--import-session", type=str, help="Imports an exported session")
+    parser.add_argument("-es", "--export-session", type=str, help="Exports a generated session")
     parser.add_argument("-ls", "--sessions", help="Outputs all sessions", action="store_true")
     parser.add_argument("-c", "--connect", type=str, help="Connect to a saved SSH session by name")
     parser.add_argument("-i", "--info", type=str, help="Outputs the session info")
@@ -27,38 +27,55 @@ def main():
 
     args = parser.parse_args()
 
-    if args.generate_session:
-        logger.info("[ sshman : Generating session ]")
-        SessionManager.generate_session()
-    elif args.info:
-        logger.info(f"[ sshman : Information about {args.info} ]")
-        SessionManager.show_session(args.info)
-    elif args.update:
-        logger.info(f"[ sshman : Downloading latest version of sshman... ]")
-        VersionManager.download_latest(GH_USERNAME, REPOSITORY, path="./")
-    elif args.version:
-        installed_version = VersionManager.get_installed_version()
-        latest_version = VersionManager.get_latest_version(GH_USERNAME, REPOSITORY)
-        logger.info(f"[ sshman : Installed version: {installed_version} | Latest version: {latest_version} ]")
-    elif args.connect:
-        sm = SessionManager()
-        logger.info(f"[ sshman : Connecting to session '{args.connect}' ]")
-        sm.connect_session(args.connect)
-    elif args.sessions:
-        SessionManager.list_sessions()
-    elif args.remove_session:
-        logger.info(f"[ sshman : Removing session '{args.remove_session}' ]")
-        config_manager = ConfigManager()
-        config_manager.remove_session(args.remove_session)
-    elif args.export_session:
-        config_manager = ConfigManager()
-        config_manager.export_session_info(session_name=f"{args.export_session}", export_dir="./")
-    elif args.import_session:
-        config_manager = ConfigManager()
-        config_manager.import_session_info(session_name=f"{args.import_session}",
-                                           import_file=f"./{args.import_session}")
-    else:
-        logger.error("[ sshman : No valid option selected. Use --help for usage details. ]")
+    action_handlers = {
+        'generate_session': SessionManager.generate_session,
+        'info': lambda: SessionManager.show_session(args.info),
+        'update': lambda: VersionManager.download_latest(GH_USERNAME, REPOSITORY, path="./"),
+        'version': lambda: show_version(),
+        'connect': lambda: connect_session(args.connect),
+        'sessions': SessionManager.list_sessions,
+        'remove_session': lambda: remove_session(args.remove_session),
+        'export_session': lambda: export_session(args.export_session),
+        'import_session': lambda: import_session(args.import_session),
+    }
+
+    selected_action = None
+    for action, value in vars(args).items():
+        if value:
+            selected_action = action
+            break
+
+    action_handler = action_handlers.get(selected_action, lambda: logger.error(
+        "[ sshman : No valid option selected. Use --help for usage details. ]"))
+    action_handler()
+
+
+def show_version():
+    installed_version = VersionManager.get_installed_version()
+    latest_version = VersionManager.get_latest_version(GH_USERNAME, REPOSITORY)
+    logger.info(f"[ sshman : Installed version: {installed_version} | Latest version: {latest_version} ]")
+
+
+def connect_session(session_name):
+    sm = SessionManager()
+    logger.info(f"[ sshman : Connecting to session '{session_name}' ]")
+    sm.connect_session(session_name)
+
+
+def remove_session(session_name):
+    logger.info(f"[ sshman : Removing session '{session_name}' ]")
+    config_manager = ConfigManager()
+    config_manager.remove_session(session_name)
+
+
+def export_session(session_name):
+    config_manager = ConfigManager()
+    config_manager.export_session_info(session_name=f"{session_name}", export_dir="./")
+
+
+def import_session(import_file):
+    config_manager = ConfigManager()
+    config_manager.import_session_info(session_name=f"{import_file}", import_file=f"./{import_file}")
 
 
 if __name__ == "__main__":
