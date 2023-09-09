@@ -3,10 +3,10 @@ import platform
 import shutil
 import tarfile
 from requests import get
-from logging import basicConfig, getLogger, INFO
+import logging
 
-basicConfig(level=INFO, format="[%(levelname)s] %(message)s")
-logger = getLogger("sshman")
+logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
+logger = logging.getLogger("sshman")
 
 GH_USERNAME, REPOSITORY = "auth-xyz", "sshman"
 
@@ -17,8 +17,7 @@ class VersionManager:
         version_file = os.path.join(os.path.expanduser("~/.sshm/.bin/"), "version")
         if os.path.exists(version_file):
             with open(version_file, "r") as f:
-                content = f.read()
-                return content
+                return f.read().strip()
         return "Unknown"
 
     @staticmethod
@@ -27,16 +26,14 @@ class VersionManager:
         response = get(url)
         if response.status_code == 200:
             release_data = response.json()
-            version = release_data["tag_name"]
-            return version
-
-        return 'Unknown'
+            return release_data.get("tag_name", "Unknown")
+        return "Unknown"
 
     @staticmethod
     def download_latest(user: str, repo: str, path="./"):
         os_name = platform.system().lower()
         if os_name not in ["linux", "windows"]:
-            print(f"[ sshman: Unsupported OS '{os_name}'. Only Linux and Windows are supported. ]")
+            logger.info(f"[ sshman: Unsupported OS '{os_name}'. Only Linux and Windows are supported. ]")
             return
 
         os_suffix = "linux" if os_name == "linux" else "windows"
@@ -46,11 +43,11 @@ class VersionManager:
         lat_ver = VersionManager.get_latest_version(GH_USERNAME, REPOSITORY)
 
         if ins_ver == lat_ver:
-            return logger.info("[ sshman : You already have the latest version downloaded. ]")
+            logger.info("[ sshman : You already have the latest version downloaded. ]")
         else:
             if response.status_code == 200:
                 release_data = response.json()
-                assets = release_data["assets"]
+                assets = release_data.get("assets", [])
 
                 # Find the correct asset for the user's OS
                 asset = next((a for a in assets if os_suffix in a["name"].lower()), None)
@@ -68,12 +65,9 @@ class VersionManager:
                             for chunk in download_response.iter_content(chunk_size=8192):
                                 f.write(chunk)
 
-                except Exception as e:
-                    logger.error(f"[ sshman : Failed to download the latest version. Error: {e}]")
-                    return
-                else:
                     logger.info(f"[ sshman : Finished downloading: {asset['name']} ]")
                     downloaded_version = VersionManager.get_latest_version(GH_USERNAME, REPOSITORY)
+
                     with tarfile.open(filename, "r:gz") as tar:
                         tar.extractall(path=path)
 
@@ -98,3 +92,5 @@ class VersionManager:
                         logger.info("[ sshman: Cleaned up extracted files. ]")
                     else:
                         logger.info(f"[ sshman: Failed to fetch release data. Status code: {response.status_code} ]")
+                except Exception as e:
+                    logger.error(f"[ sshman : Failed to download or install the latest version. Error: {e}]")
