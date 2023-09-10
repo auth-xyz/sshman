@@ -2,9 +2,9 @@
 from argparse import ArgumentParser
 from logging import basicConfig, getLogger, INFO
 
-from sshman.config_manager import ConfigManager
-from sshman.session_manager import SessionManager
-from sshman.version_manager import VersionManager
+from Assets.config_manager import ConfigManager
+from Assets.session_manager import SessionManager
+from Assets.version_manager import VersionManager
 
 basicConfig(level=INFO, format="[%(levelname)s] %(message)s")
 logger = getLogger("sshman")

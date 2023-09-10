@@ -10,7 +10,7 @@ from binascii import hexlify, unhexlify
 from paramiko import RSAKey, AuthenticationException, SSHException, SSHClient
 from paramiko.client import RejectPolicy
 from toml import dump, dumps, loads
-from sshman.config_manager import ConfigManager
+from Assets.config_manager import ConfigManager
 
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 logger = logging.getLogger("sshman")
