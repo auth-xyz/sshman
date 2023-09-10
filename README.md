@@ -24,7 +24,16 @@ poetry run python build.py # Actually building
 ```
 #### Installation (Linux)
 ```bash
-curl -L ""
+# Easy way
+curl -L "https://raw.githubusercontent.com/auth-xyz/sshman/main/Bin/linux_install.sh" | bash
+
+# Manual way:
+# Download the latest binary from the release page
+tar xfz linux-<version>.tar.gz
+mkdir -p $HOME/.sshm/.bin
+mv sshman $HOME/.sshm/.bin
+
+sudo ln -s $HOME/.sshm/.bin/sshman /usr/bin/  
 ```
 
 #### General Usage
