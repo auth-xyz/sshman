@@ -24,13 +24,7 @@ poetry run python build.py # Actually building
 ```
 #### Installation (Linux)
 ```bash
-# Extracting the downloaded binary / built binary
-tar xfz <version>.tar.gz
-
-# First way
-sudo ln -s path/to/sshman /usr/bin/sshman
-# Easier way
-sudo mv path/to/sshman /usr/bin/
+curl -L ""
 ```
 
 #### General Usage
