@@ -36,7 +36,7 @@ class SessionManager:
     @staticmethod
     def _decode_data(hex_data):
         prefix = "se:"
-        hex_data = hex_data[len(prefix):]  # Remove the prefix
+        hex_data = hex_data[len(prefix):]
         half_length = len(hex_data) // 2
         ending_half = hex_data[:half_length]
         beginning_half = hex_data[half_length:]

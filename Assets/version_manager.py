@@ -14,7 +14,7 @@ GH_USERNAME, REPOSITORY = "auth-xyz", "sshman"
 class VersionManager:
     @staticmethod
     def get_installed_version():
-        version_file = os.path.join(os.path.expanduser("~/.sshm/.bin/"), "version")
+        version_file = os.path.join(os.path.expanduser("~/.sshm/.bin/"), "version")  # Updated path here
         if os.path.exists(version_file):
             with open(version_file, "r") as f:
                 return f.read().strip()
@@ -72,7 +72,7 @@ class VersionManager:
                         tar.extractall(path=path)
 
                     extracted_sshman = os.path.join(path, "sshman")
-                    target_sshman = os.path.expanduser("~/.sshm/.bin/sshman")
+                    target_sshman = os.path.expanduser("~/.local/bin/sshman")
                     version_file = os.path.expanduser("~/.sshm/.bin/version")
 
                     if os.path.exists(target_sshman):
@@ -81,7 +81,7 @@ class VersionManager:
                         os.remove(version_file)
 
                     shutil.move(extracted_sshman, target_sshman)
-                    logger.info("[ sshman : Moved binary to .sshm/.bin/]")
+                    logger.info("[ sshman : Moved binary to .local/bin/ ]")
 
                     version_file_path = os.path.join(os.path.expanduser("~/.sshm/.bin/"), "version")
                     with open(version_file_path, "w") as vf:
