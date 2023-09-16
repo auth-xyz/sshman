@@ -6,9 +6,8 @@
 *  [Python 3.10+](https://python.org/downloads/)
 *  [Poetry 1.5+](https://github.com/python-poetry/poetry) (optional)
 
-> [!NOTE]
-> Of course you can also download the compiled binary from the [GitHub release page](https://github.com/auth-xyz/sshman/releases)
-
+[![install with instl.sh](https://img.shields.io/badge/install_with-instl.sh-blue?link=https://instl.sh/auth-xyz/sshman&style=for-the-badge)](https://instl.sh/auth-xyz/sshman)
+[![install count](https://img.shields.io/endpoint?url=https://instl.sh/api/v1/badge/shields.io/stats/auth-xyz/sshman&style=for-the-badge)](https://instl.sh/auth-xyz/sshman)
 
 #### Building from source
 
@@ -25,7 +24,7 @@ poetry run python build.py # Actually building
 #### Installation (Linux)
 ```bash
 # Easy way
-curl -L "https://raw.githubusercontent.com/auth-xyz/sshman/main/Bin/linux_install.sh" | bash
+curl -sSL instl.sh/auth-xyz/sshman/linux | bash
 
 # Manual way:
 # Download the latest binary from the release page
