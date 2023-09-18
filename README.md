@@ -29,7 +29,6 @@ curl -sSL instl.sh/auth-xyz/sshman/linux | bash
 # Manual way:
 # Download the latest binary from the release page
 tar xfz linux-<version>.tar.gz
-mkdir -p $HOME/.sshm/.bin
 mv sshman $HOME/.local/bin/
 
 sudo ln -s $HOME/.local/bin/sshman /usr/bin/  
