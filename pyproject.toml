@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sshman"
-version = "0.3.3"
+version = "0.4.0"
 description = "Simple SSH manager tool"
 authors = ["auth-xyz <smmc.auth@gmail.com>"]
 readme = "README.md"
@@ -10,7 +10,7 @@ python = "^3.11"
 paramiko = "3.3.1"
 toml = "0.10.2"
 beautifulsoup4 = "4.12.2"
-httpx = "0.24.1"
+httpx = "0.25.0"
 requests = "2.31.0"
 
 [build-system]

@@ -45,13 +45,14 @@ sshman -rs <session>
 sshman --remove-session <session>
 
 # Connecting to a session
-sshman -c <session> --safe #default
-sshman --connect <session> --unsafe # unsafe is when you haven't connected to this server yet
+sshman -c <session> 
+sshman --connect <session> 
 
 # Other helpful commands that are self-explained
 sshman -ls / --list-sessions 
 sshman -u / --update
 sshman -v / --version
+sshman -i / --info <session>
 ```
 
 ###### If you'd like to contribute, feel free to do so!
