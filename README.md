@@ -31,7 +31,7 @@ curl -sSL instl.sh/auth-xyz/sshman/linux | bash
 tar xfz linux-<version>.tar.gz
 mv sshman $HOME/.local/bin/
 
-sudo ln -s $HOME/.local/bin/sshman /usr/bin/  
+sudo ln -sf $HOME/.local/bin/sshman /usr/bin/  
 ```
 
 #### General Usage
